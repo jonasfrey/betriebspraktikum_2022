@@ -33,10 +33,10 @@ for n_y in range(0,n_img_height):
         n_value_normalized = n_value/32
     
 
-        if n_value_normalized < n_below_blacklevel:
+        if n_value_normalized < n_below_blacklevel/32:
             f_set_pixel_value(a_pixel, 0)
             counter = counter + 1
-        # elif n_value > n_below_blacklevel:
+        elif n_value > n_below_blacklevel:
         #     f_set_pixel_value(a_pixel, min(0.4*n_value**1.8, 255)) #Funktion min() nimmt immer das kleinste der Argumente
         # if n_value > n_below_blacklevel:
         #     f_set_pixel_value(a_pixel, min(n_value + 20, 255))
