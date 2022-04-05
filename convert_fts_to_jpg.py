@@ -36,7 +36,7 @@ a_image_data = o_hdulist[0].data
 
 
 # a_image_data = a_image_data / pow(2,16)
-a_image_data = a_image_data / pow(2,8)
+a_image_data = a_image_data / pow(2,5)
 # a_image_data = a_image_data / pow(2,32)
 
 
@@ -59,7 +59,7 @@ new_img = cv2.merge(
 n_width = new_img.shape[0]
 n_height = new_img.shape[1]
 
-n_down_size_factor = 0.1
+n_down_size_factor = 0.0015
 
 new_img = cv2.resize(new_img, (int(n_width*n_down_size_factor), int(n_height*n_down_size_factor)), 0.1, 0.1)
 cv2.imwrite(s_path_file_name_jpg, new_img)
