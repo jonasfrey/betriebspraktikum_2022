@@ -35,8 +35,8 @@ a_image_data = o_hdulist[0].data
 # a_image_data = a_image_data * a_image_data
 
 
-a_image_data = a_image_data / pow(2,16)
-# a_image_data = a_image_data / pow(2,6)
+# a_image_data = a_image_data / pow(2,16)
+a_image_data = a_image_data / pow(2,8)
 # a_image_data = a_image_data / pow(2,32)
 
 
