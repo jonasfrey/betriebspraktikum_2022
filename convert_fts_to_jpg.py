@@ -1,8 +1,8 @@
 import numpy as np
 from PIL import Image
 from astropy.io import fits
-import sys
 import cv2 
+import sys
 import time
 # call it 
 # python3 convert_fts_to_jpg.py 2021-07-02T00-57-52_M17_Open_280s_Jonas-F.fts
