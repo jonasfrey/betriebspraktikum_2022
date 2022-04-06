@@ -15,7 +15,7 @@ o_img = cv2.imread(s_path_file_name)
 a_img = o_img
 n_img_width = o_img.shape[0]
 n_img_height = o_img.shape[1]
-n_below_blacklevel = 255/20 #threshhold
+n_below_blacklevel = 255/18 #threshhold
 counter = 0
 def f_set_pixel_value(a_pixel, n_value): # 2 Parameter stehen bei Aufrufen zur Verfügung
     a_pixel[0] = n_value
@@ -34,7 +34,7 @@ for n_y in range(0,n_img_height):
     
 
         if n_value < n_below_blacklevel:
-            f_set_pixel_value(a_pixel, 0)
+            f_set_pixel_value(a_pixel, n_value/2)
             counter = counter + 1
         elif n_value > n_below_blacklevel:
             f_set_pixel_value(a_pixel, min(0.3*n_value**2, 255)) #Funktion min() nimmt immer das kleinste der Argumente
@@ -46,4 +46,4 @@ for n_y in range(0,n_img_height):
 
 cv2.imwrite(__file__.split(".")[0] +".jpg", o_img)
 
-# print(o_img)
+# print(o_img)git
