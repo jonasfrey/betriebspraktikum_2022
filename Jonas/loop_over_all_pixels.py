@@ -34,7 +34,11 @@ for n_y in range(0,n_img_height):
         # 
         n_value = int(n_value)
 
+<<<<<<< HEAD
+        n_value_normalized = n_value / 100
+=======
         n_value_normalized = n_value / 40
+>>>>>>> 974530d57113bc9292fd89d039eaf49f95801e4d
 
         # 12 , 12/32 = 0.375  -> 0.375 * 255 => 95
         # 9  , 9/32  = 0.28   -> 0.28 * 255  => 71
@@ -62,6 +66,6 @@ for n_y in range(0,n_img_height):
 
 print("n_pixel_count_below_blacklevel")
 print(n_pixel_count_below_blacklevel)
-cv2.imwrite(__file__.split(".")[0] +".jpg", o_img)
+cv2.imwrite("loop_pic.jpg", o_img)
 
 # print(o_img)
