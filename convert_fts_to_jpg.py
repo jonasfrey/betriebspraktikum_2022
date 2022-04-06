@@ -1,6 +1,6 @@
 import numpy as np
 from PIL import Image
-from astropy.io import fits
+from astropy.io import fits as fritz
 import cv2 
 import sys
 import time
@@ -17,7 +17,7 @@ s_path_file_name_jpg = ".".join(a_s_parts)
 
 # print(s_path_file_name_jpg)
 # fits_image_filename = fits.util.get_testdata_filepath(s_path_file_name)
-o_hdulist = fits.open(s_path_file_name)
+o_hdulist = fritz.open(s_path_file_name)
 
 a_image_data = o_hdulist[0].data
 
