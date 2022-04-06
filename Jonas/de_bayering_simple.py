@@ -1,6 +1,4 @@
-from curses import A_DIM
-from re import I
-from this import d
+
 import cv2 
 import os
 import random 
