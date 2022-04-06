@@ -173,6 +173,33 @@ def f_o_get_debayered_pixel(
                 ],
         dtype=numpy.uint8)
 
+    if s_pattern_name == "bggb": 
+        o_debayered_pixel = numpy.array(
+                [
+                    (numpy.uint8(n_val1)),# b
+                    (numpy.uint8( int((n_val2+n_val3)/2))),# g
+                    (numpy.uint8(n_val1))# r
+                ],
+        dtype=numpy.uint8)
+
+    if s_pattern_name == "rauschen": 
+        o_debayered_pixel = numpy.array(
+                [
+                    numpy.uint8(int(random.random() * pow(2,8))),
+                    numpy.uint8(int(random.random() * pow(2,8))),
+                    numpy.uint8(int(random.random() * pow(2,8))),
+                ],
+        dtype=numpy.uint8)
+
+    if s_pattern_name == "rauschen": 
+        o_debayered_pixel = numpy.array(
+                [
+                    0,
+                    numpy.uint8(int(random.random() * pow(2,8))),
+                    numpy.uint8(int(random.random() * pow(2,8))),
+                ],
+        dtype=numpy.uint8)
+
 
     return o_debayered_pixel 
 
@@ -199,7 +226,7 @@ while n_y < n_img_height_even-2:
             n_val2, 
             n_val3, 
             n_val4, 
-            "rggb"
+            "rauschen"
         )
         
         o_debayered_img[int(n_y/2)][int(n_x/2)] = a_debayered_pixel
