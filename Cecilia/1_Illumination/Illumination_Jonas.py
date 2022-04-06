@@ -62,6 +62,6 @@ for n_y in range(0,n_img_height):
 
 print("n_pixel_count_below_blacklevel")
 print(n_pixel_count_below_blacklevel)
-cv2.imwrite("loop_pic.jpg", o_img)
+cv2.imwrite("Illumination_Jonas.jpg", o_img)
 
 # print(o_img)

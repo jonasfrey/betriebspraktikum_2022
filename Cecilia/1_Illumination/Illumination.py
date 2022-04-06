@@ -4,7 +4,7 @@ import random
 
 b_os_is_windows = os.name == 'nt'
 
-s_path_file_name = './../2019-10-26T03-26-55_M51_Clear_280s_big.jpg'
+s_path_file_name = './../../2019-10-26T03-26-55_M51_Clear_280s_big.jpg'
 if(b_os_is_windows):
     s_path_file_name = "\\".join(s_path_file_name.split("/"))
 
