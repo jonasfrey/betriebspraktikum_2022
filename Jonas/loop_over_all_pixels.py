@@ -34,7 +34,7 @@ for n_y in range(0,n_img_height):
         # 
         n_value = int(n_value)
 
-        n_value_normalized = n_value / 32
+        n_value_normalized = n_value / 40
 
         # 12 , 12/32 = 0.375  -> 0.375 * 255 => 95
         # 9  , 9/32  = 0.28   -> 0.28 * 255  => 71

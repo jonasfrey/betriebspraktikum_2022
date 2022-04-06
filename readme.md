@@ -57,3 +57,6 @@ git push
 ```
 git pull
 ```
+
+## bayer pattern 
+![bayer pattern](https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Bayer_pattern_on_sensor.svg/350px-Bayer_pattern_on_sensor.svg.png)
