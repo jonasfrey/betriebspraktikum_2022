@@ -1,3 +1,4 @@
+
 import cv2 
 import os
 import random 
@@ -10,7 +11,7 @@ import numpy
 # a_example_not_debayered = [
 #     [ R, G, R, G, R, G, R, G],
 #     [ G, B, G, B, G, B, G, B],
-#     [ R, G, R, G, R, G, R, G],c
+#     [ R, G, R, G, R, G, R, G],
 #     [ G, B, G, B, G, B, G, B],
 #     [ R, G, R, G, R, G, R, G],
 #     [ G, B, G, B, G, B, G, B]
@@ -50,9 +51,10 @@ import numpy
 # sometimes 
 b_os_is_windows = os.name == 'nt'
 
-s_path_file_name = './../../2022-03-07T21-09-10_Coordinates_FILTER_30s_Severin-W.jpg'
-s_path_output_file = "static.jpg" # static filename
-#s_path_output_file = __file__.split(".")[0] 
+s_path_file_name = './../../2022-03-07T21-09-10_Coordinates_FILTER_30s_Severin-W_small.jpg'
+# s_path_output_file = __file__.split(".")[0] 
+s_path_output_file = "2022-03-07T21-09-10_Coordinates_FILTER_30s_Severin-W_small_debayered.jpg" # static filename
+s_path_output_file_suffix = "_default"
 
 if(b_os_is_windows):
     s_path_file_name = "\\".join(s_path_file_name.split("/"))
@@ -65,7 +67,7 @@ n_img_width = o_img.shape[1] ## importatnt index 1 [1] is width
 
 #optional resize 
 n_resize_factor = 1.0 # no resizing
-# n_resize_factor = 0.5 # 10 times smallerj
+# n_resize_factor = 0.25 # 10 times smallerj
 n_img_width = int(n_img_width*n_resize_factor)
 n_img_height = int(n_img_height*n_resize_factor)
 
@@ -79,6 +81,7 @@ o_img = cv2.resize(
     n_resize_factor
 )
 
+# cv2.imwrite("2022-03-07T21-09-10_Coordinates_FILTER_30s_Severin-W"+"_small.jpg", o_img)
 # exit()
 # pseudo crop image if width and height is not even
 n_img_width_even = int(n_img_width/2) * 2
@@ -102,13 +105,12 @@ def f_o_get_debayered_pixel(
     n_val2,
     n_val3,
     n_val4,
-    s_pattern_name = "rggb"
+    s_pattern_name
 ):
-    global s_path_output_file
+    global s_path_output_file_suffix
+    s_path_output_file_suffix = s_pattern_name
 
-    s_path_output_file = s_path_file_name+"_"+s_pattern_name
-
-    if(s_pattern_name == "rggb"): 
+    if s_pattern_name == "rggb": 
         o_debayered_pixel = numpy.array(
                 [
                     (numpy.uint8(n_val4)),# b
@@ -117,7 +119,7 @@ def f_o_get_debayered_pixel(
                 ],
         dtype=numpy.uint8)
 
-    if(s_pattern_name == "gbbr"): 
+    if s_pattern_name == "gbbr": 
         o_debayered_pixel = numpy.array(
                 [
                     (numpy.uint8(n_val1)),# b
@@ -126,11 +128,47 @@ def f_o_get_debayered_pixel(
                 ],
         dtype=numpy.uint8)
 
-    if(s_pattern_name == "gbgr"): 
+    if s_pattern_name == "gbgr": 
         o_debayered_pixel = numpy.array(
                 [
                     (numpy.uint8(n_val2)),# b
                     (numpy.uint8(int((n_val1+n_val3)/2))),# g 
+                    (numpy.uint8(n_val4))# r
+                ],
+        dtype=numpy.uint8)
+
+    if s_pattern_name == "rgbg": 
+        o_debayered_pixel = numpy.array(
+                [
+                    (numpy.uint8(n_val3)),# b
+                    (numpy.uint8(int((n_val2+n_val4)/2))),# g 
+                    (numpy.uint8(n_val1))# r
+                ],
+        dtype=numpy.uint8)
+
+    if s_pattern_name == "grbg": 
+        o_debayered_pixel = numpy.array(
+                [
+                    (numpy.uint8(n_val3)),# b
+                    (numpy.uint8(int((n_val1+n_val4)/2))),# g 
+                    (numpy.uint8(n_val2))# r
+                ],
+        dtype=numpy.uint8)
+
+    if s_pattern_name == "gbrg": 
+        o_debayered_pixel = numpy.array(
+                [
+                    (numpy.uint8(n_val2)),# b
+                    (numpy.uint8(int((n_val1+n_val4)/2))),# g 
+                    (numpy.uint8(n_val3))# r
+                ],
+        dtype=numpy.uint8)
+
+    if s_pattern_name == "bggr": 
+        o_debayered_pixel = numpy.array(
+                [
+                    (numpy.uint8(n_val1)),# b
+                    (numpy.uint8( int((n_val2+n_val3)/2))),# g
                     (numpy.uint8(n_val4))# r
                 ],
         dtype=numpy.uint8)
@@ -155,12 +193,13 @@ while n_y < n_img_height_even-2:
         #         (numpy.uint8(n_val4))# b
         #     ],
         #     dtype=numpy.uint8)
+        
         a_debayered_pixel = f_o_get_debayered_pixel(
             n_val1, 
             n_val2, 
             n_val3, 
             n_val4, 
-            "gbgr"
+            "rggb"
         )
         
         o_debayered_img[int(n_y/2)][int(n_x/2)] = a_debayered_pixel
@@ -170,8 +209,11 @@ while n_y < n_img_height_even-2:
     n_y = n_y + 2 
 
 
+print(s_path_output_file)
 
-cv2.imwrite(s_path_output_file+".jpg", o_debayered_img)
+print(
+    cv2.imwrite("De_Bayering_Jonas"+"_"+s_path_output_file_suffix+".jpg", o_debayered_img)
+)
     
 
-print(o_img)
+# print(o_img)

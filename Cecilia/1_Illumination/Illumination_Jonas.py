@@ -5,7 +5,7 @@ import random
 
 b_os_is_windows = os.name == 'nt'
 
-s_path_file_name = './../2019-10-26T03-26-55_M51_Clear_280s_big.jpg'
+s_path_file_name = './../../2019-10-26T03-26-55_M51_Clear_280s_big.jpg'
 if(b_os_is_windows):
     s_path_file_name = "\\".join(s_path_file_name.split("/"))
 
@@ -21,7 +21,7 @@ n_img_width = o_img.shape[0]
 n_img_height = o_img.shape[1]
 
 # threshhold 
-n_below_blacklevel = 255/18
+n_below_blacklevel = 255/3
 
 n_pixel_count_below_blacklevel = 0
 
@@ -34,7 +34,7 @@ for n_y in range(0,n_img_height):
         # 
         n_value = int(n_value)
 
-        n_value_normalized = n_value / 50
+        n_value_normalized = n_value / 70
 
         # 12 , 12/32 = 0.375  -> 0.375 * 255 => 95
         # 9  , 9/32  = 0.28   -> 0.28 * 255  => 71
@@ -42,7 +42,7 @@ for n_y in range(0,n_img_height):
 
         f_set_pixel_value(
             a_pixel,
-            min(n_value_normalized*255, 255)
+            min(n_value_normalized*220, 255)
         )
 
         if n_value < n_below_blacklevel:
