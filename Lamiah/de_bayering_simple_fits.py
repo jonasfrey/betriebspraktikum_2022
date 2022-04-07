@@ -1,60 +1,15 @@
-
-from fcntl import F_ADD_SEALS
-from socket import AddressFamily
 import cv2 
 import os
 import random 
 import numpy
+from astropy.io import fits as fritz
 
-# Ziel: herausfinden, welches Muster die Pixel auf dem Sensor haben
-
-# there are black white (single channel) images where each pixel has a brightness value
-# each pixel has a certain filter in front of the sensor , red / green or blue, 
-# we can combine 4 pixels to get a colored image 
-# a_example_not_debayered = [
-#     [ R, G, R, G, R, G, R, G],
-#     [ G, B, G, B, G, B, G, B],
-#     [ R, G, R, G, R, G, R, G],
-#     [ G, B, G, B, G, B, G, B],
-#     [ R, G, R, G, R, G, R, G],
-#     [ G, B, G, B, G, B, G, B]
-# ]
-# # to combine the colors we take 4(single channel)pixel values, and combine them into 1 (three channel) pixel 
-# a_example_not_debayered = [
-    
-#     [ [R,G,B],[R,G,B],[R,G,B] ],
-#     [ [R,G,B],[R,G,B],[R,G,B] ],
-#     [ [R,G,B],[R,G,B],[R,G,B] ]
-
-# ]
-# # now because we have 2 G values, we can take the arithmetic medium of both => (G+G)/2 => [R,(G+G)/2),B]
-# a_example_not_debayered = [
-    
-#     [ [R,(G+G)/2),B],[R,(G+G)/2),B],[R,(G+G)/2),B] ],
-#     [ [R,(G+G)/2),B],[R,(G+G)/2),B],[R,(G+G)/2),B] ],
-#     [ [R,(G+G)/2),B],[R,(G+G)/2),B],[R,(G+G)/2),B] ]
-    
-# ]
-# this pattern of 4 filters is called the bayer pattern, 
-# it can vary and depends on the sensor
-# example of patterns:
-# R G G B 
-# [..R, G..]
-# [..G, B..]
-# 
-# G B R G 
-# [..G, B..]
-# [..R, G..]
-#  
-# B G G R
-# [..B, G..]
-# [..G, R..]
 
 
 # sometimes 
 b_os_is_windows = os.name == 'nt'
 
-s_path_file_name = './../2022-03-07T21-09-10_Coordinates_FILTER_30s_Severin-W.jpg'
+s_path_file_name = './../2022-03-07T21-09-10_Coordinates_FILTER_30s_Severin-W.fts'
 # s_path_output_file = __file__.split(".")[0] 
 s_path_output_file = "2022-03-07T21-09-10_Coordinates_FILTER_30s_Severin-W_debayered.jpg" # static filename
 s_path_output_file_suffix = "_default"
@@ -62,11 +17,17 @@ s_path_output_file_suffix = "_default"
 if(b_os_is_windows):
     s_path_file_name = "\\".join(s_path_file_name.split("/"))
 
-o_img = cv2.imread(s_path_file_name)
+#o_img = cv2.imread(s_path_file_name)
+o_hdulist = fritz.open(s_path_file_name)
 
+o_img = o_hdulist[0].data
+
+print(o_img)
+exit()
 a_img = o_img
 n_img_height = o_img.shape[0] ## important index 0 [0] is height
 n_img_width = o_img.shape[1] ## importatnt index 1 [1] is width
+
 
 #optional resize 
 n_resize_factor = 1.0 # no resizing
@@ -168,16 +129,6 @@ def f_o_get_debayered_pixel(
                 ],
         dtype=numpy.uint8)
 
-    if(s_pattern_name == "rrgb"): 
-        o_debayered_pixel = numpy.array(
-                [
-                    (numpy.uint8(n_val3)),
-                    (numpy.uint8((n_val2 + n_val4)/2)),
-                    (numpy.uint8(n_val1))
-                ],
-        dtype=numpy.uint8)
-    
-#je nach dem, wie Pixel aufgebaut ist, bekommt man schlussendlich ein unterschiedliches Resultat
     return o_debayered_pixel 
 
 n_y = 0
@@ -196,7 +147,7 @@ while n_y < n_img_height_even-2:
             n_val2, 
             n_val3, 
             n_val4, 
-            "rggb"
+            "bildrauschen"
         )
         
         o_debayered_img[int(n_y/2)][int(n_x/2)] = a_debayered_pixel
