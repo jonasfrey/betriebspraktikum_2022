@@ -60,3 +60,7 @@ git pull
 
 ## bayer pattern 
 ![bayer pattern](https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Bayer_pattern_on_sensor.svg/350px-Bayer_pattern_on_sensor.svg.png)
+
+## bit depth
+
+![bit depth](http://2.bp.blogspot.com/-NQPXItfa_Og/VJ_5VBeHv3I/AAAAAAAAAgA/Ct9Ae_UW6E0/s1600/bitdepths_chart_med.jpg)
