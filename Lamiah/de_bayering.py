@@ -1,6 +1,6 @@
 from re import I
 import cv2 
-import os
+import os #interaction with operating system
 import random 
 import numpy
 
@@ -13,7 +13,7 @@ s_path_output_file = __file__.split(".")[0] +".jpg"
 if(b_os_is_windows):
     s_path_file_name = "\\".join(s_path_file_name.split("/"))
 
-o_img = cv2.imread(s_path_file_name)
+o_img = cv2.imread(s_path_file_name) #cv2.imread() loads an image from specified file
 
 a_img = o_img
 n_img_width = o_img.shape[0]
