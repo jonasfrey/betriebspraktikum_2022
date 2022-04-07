@@ -1,6 +1,8 @@
 Hello 
 ![hello](./../hello-there-private-from-penguins-of-madagascar.gif)
 
+---
+# GitHub
 UPLOAD:
 git add .\Cecilia\
 git commit -m "mesage"
@@ -13,3 +15,11 @@ git fetch
 DOWNLOAD:
 git pull
 
+---
+# VSCode
+alt + pfeil : mehrere Zeilen gleichzeitig bearbeiten
+
+---
+# To-Do-List FRITZ-Software
+Illumination optimieren
+De-Bayering Rauschen minimieren 
