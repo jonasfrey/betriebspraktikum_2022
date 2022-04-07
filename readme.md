@@ -64,3 +64,7 @@ git pull
 ## bit depth
 
 ![bit depth](./bitdepths_chart_med.jpg)
+
+
+## python fractals 
+[https://github.com/jonasfrey/python_code/tree/main/fractals](https://github.com/jonasfrey/python_code/tree/main/fractals)

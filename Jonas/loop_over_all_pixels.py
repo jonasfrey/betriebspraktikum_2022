@@ -2,6 +2,7 @@ from re import I
 import cv2 
 import os
 import random 
+import math
 
 b_os_is_windows = os.name == 'nt'
 
@@ -34,19 +35,25 @@ for n_y in range(0,n_img_height):
         # 
         n_value = int(n_value)
 
-<<<<<<< HEAD
         n_value_normalized = n_value / 100
-=======
-        n_value_normalized = n_value / 40
->>>>>>> 974530d57113bc9292fd89d039eaf49f95801e4d
+
+        n_value_normalized = n_value / 255
 
         # 12 , 12/32 = 0.375  -> 0.375 * 255 => 95
         # 9  , 9/32  = 0.28   -> 0.28 * 255  => 71
         # 50 , 50/32 = 1.56   -> 1.56 * 255
 
+        # f_set_pixel_value(
+        #     a_pixel,
+        #     min(n_value_normalized*255, 255)
+        # )
+        # f_set_pixel_value(
+        #     a_pixel,
+        #     min((1-n_value_normalized)*255, 255)
+        # )
         f_set_pixel_value(
             a_pixel,
-            min(n_value_normalized*255, 255)
+            min(math.sin(n_value_normalized)*255,255)
         )
 
         if n_value < n_below_blacklevel:

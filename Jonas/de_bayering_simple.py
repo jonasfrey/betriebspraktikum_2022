@@ -166,6 +166,7 @@ def f_o_get_debayered_pixel(
                     0,#numpy.uint8(int(random.random() * pow(2,8))),
                 ],
         dtype=numpy.uint8)
+       
 
     return o_debayered_pixel 
 
@@ -180,13 +181,21 @@ while n_y < n_img_height_even-2:
         n_val4 = int(a_img[n_y+1][n_x+1][n_channel_index])
 
 
-        a_debayered_pixel = f_o_get_debayered_pixel(
-            n_val1, 
-            n_val2, 
-            n_val3, 
-            n_val4, 
-            "bildrauschen"
-        )
+        # a_debayered_pixel = f_o_get_debayered_pixel(
+        #     n_val1, 
+        #     n_val2, 
+        #     n_val3, 
+        #     n_val4, 
+        #     "bildrauschen"
+        # )
+
+        a_debayered_pixel = numpy.array(
+                [   
+                    n_x / (n_img_width_even/2) * 255,
+                    n_x / (n_img_width_even/2) * 255,
+                    n_x / (n_img_width_even/2) * 255,
+                ],
+        dtype=numpy.uint8)
         
         o_debayered_img[int(n_y/2)][int(n_x/2)] = a_debayered_pixel
         # print(a_debayered_pixel)
@@ -195,7 +204,7 @@ while n_y < n_img_height_even-2:
     n_y = n_y + 2 
 
 
-print(s_path_output_file)
+# print(s_path_output_file)
 
 print(
     cv2.imwrite(s_path_output_file+"_"+s_path_output_file_suffix+".jpg", o_debayered_img)
