@@ -63,4 +63,4 @@ git pull
 
 ## bit depth
 
-![bit depth](http://2.bp.blogspot.com/-NQPXItfa_Og/VJ_5VBeHv3I/AAAAAAAAAgA/Ct9Ae_UW6E0/s1600/bitdepths_chart_med.jpg)
+![bit depth](./bitdepths_chart_med.jpg)
