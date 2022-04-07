@@ -226,7 +226,7 @@ while n_y < n_img_height_even-2:
             n_val2, 
             n_val3, 
             n_val4, 
-            "rauschen"
+            "rggb"
         )
         
         o_debayered_img[int(n_y/2)][int(n_x/2)] = a_debayered_pixel
@@ -239,7 +239,7 @@ while n_y < n_img_height_even-2:
 print(s_path_output_file)
 
 print(
-    cv2.imwrite("De_Bayering_Jonas"+"_"+s_path_output_file_suffix+".jpg", o_debayered_img)
+    cv2.imwrite("De_Bayering"+"_"+s_path_output_file_suffix+".jpg", o_debayered_img)
 )
     
 
