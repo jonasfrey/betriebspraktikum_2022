@@ -23,3 +23,4 @@ alt + pfeil : mehrere Zeilen gleichzeitig bearbeiten
 # To-Do-List FRITZ-Software
 Illumination optimieren
 De-Bayering Rauschen minimieren 
+loop schreiben (Farbwerte verändern)

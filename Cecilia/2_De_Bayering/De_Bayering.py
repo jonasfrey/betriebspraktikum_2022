@@ -1,51 +1,7 @@
-
 import cv2 
 import os
 import random 
 import numpy
-
-
-# there are black white (single channel) images where each pixel has a brightness value
-# each pixel has a certain filter in front of the sensor , red / green or blue, 
-# we can combine 4 pixels to get a colored image 
-# a_example_not_debayered = [
-#     [ R, G, R, G, R, G, R, G],
-#     [ G, B, G, B, G, B, G, B],
-#     [ R, G, R, G, R, G, R, G],
-#     [ G, B, G, B, G, B, G, B],
-#     [ R, G, R, G, R, G, R, G],
-#     [ G, B, G, B, G, B, G, B]
-# ]
-# # to combine the colors we take 4(single channel)pixel values, and combine them into 1 (three channel) pixel 
-# a_example_not_debayered = [
-    
-#     [ [R,G,B],[R,G,B],[R,G,B] ],
-#     [ [R,G,B],[R,G,B],[R,G,B] ],
-#     [ [R,G,B],[R,G,B],[R,G,B] ]
-
-# ]
-# # now because we have 2 G values, we can take the arithmetic medium of both => (G+G)/2 => [R,(G+G)/2),B]
-# a_example_not_debayered = [
-    
-#     [ [R,(G+G)/2),B],[R,(G+G)/2),B],[R,(G+G)/2),B] ],
-#     [ [R,(G+G)/2),B],[R,(G+G)/2),B],[R,(G+G)/2),B] ],
-#     [ [R,(G+G)/2),B],[R,(G+G)/2),B],[R,(G+G)/2),B] ]
-    
-# ]
-# this pattern of 4 filters is called the bayer pattern, 
-# it can vary and depends on the sensor
-# example of patterns:
-# R G G B 
-# [..R, G..]
-# [..G, B..]
-# 
-# G B R G 
-# [..G, B..]
-# [..R, G..]
-#  
-# B G G R
-# [..B, G..]
-# [..G, R..]
 
 
 # sometimes 
@@ -213,13 +169,13 @@ while n_y < n_img_height_even-2:
         n_val3 = int(a_img[n_y+1][n_x][n_channel_index])
         n_val4 = int(a_img[n_y+1][n_x+1][n_channel_index])
 
-        # a_debayered_pixel = numpy.array(
-        #     [
-        #         (numpy.uint8(n_val1)),# r
-        #         (numpy.uint8( int((n_val2+n_val3)/2))),# g 
-        #         (numpy.uint8(n_val4))# b
-        #     ],
-        #     dtype=numpy.uint8)
+        a_debayered_pixel = numpy.array(
+            [
+                (numpy.uint8(n_val1)),# r
+                (numpy.uint8( int((n_val2+n_val3)/2))),# g 
+                (numpy.uint8(n_val4))# b
+            ],
+            dtype=numpy.uint8)
         
         a_debayered_pixel = f_o_get_debayered_pixel(
             n_val1, 
