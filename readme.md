@@ -60,3 +60,11 @@ git pull
 
 ## bayer pattern 
 ![bayer pattern](https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Bayer_pattern_on_sensor.svg/350px-Bayer_pattern_on_sensor.svg.png)
+
+## bit depth
+
+![bit depth](./bitdepths_chart_med.jpg)
+
+
+## python fractals 
+[https://github.com/jonasfrey/python_code/tree/main/fractals](https://github.com/jonasfrey/python_code/tree/main/fractals)

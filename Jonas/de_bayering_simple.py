@@ -1,4 +1,6 @@
 
+from fcntl import F_ADD_SEALS
+from socket import AddressFamily
 import cv2 
 import os
 import random 
@@ -52,9 +54,9 @@ import numpy
 # sometimes 
 b_os_is_windows = os.name == 'nt'
 
-s_path_file_name = './../2022-03-07T21-09-10_Coordinates_FILTER_30s_Severin-W_small.jpg'
+s_path_file_name = './../2022-03-07T21-09-10_Coordinates_FILTER_30s_Severin-W.jpg'
 # s_path_output_file = __file__.split(".")[0] 
-s_path_output_file = "2022-03-07T21-09-10_Coordinates_FILTER_30s_Severin-W_small_debayered.jpg" # static filename
+s_path_output_file = "2022-03-07T21-09-10_Coordinates_FILTER_30s_Severin-W_debayered.jpg" # static filename
 s_path_output_file_suffix = "_default"
 
 if(b_os_is_windows):
@@ -106,7 +108,7 @@ def f_o_get_debayered_pixel(
     n_val2,
     n_val3,
     n_val4,
-    s_pattern_name = "rggb"
+    s_pattern_name
 ):
     global s_path_output_file_suffix
     s_path_output_file_suffix = s_pattern_name
@@ -138,6 +140,7 @@ def f_o_get_debayered_pixel(
                 ],
         dtype=numpy.uint8)
 
+<<<<<<< HEAD
     if(s_pattern_name == "rgbg"): 
         o_debayered_pixel = numpy.array(
                 [
@@ -146,6 +149,36 @@ def f_o_get_debayered_pixel(
                     (numpy.uint8(n_val1))
                 ],
         dtype=numpy.uint8)
+=======
+    if(s_pattern_name == "nur_rot"):
+    
+        o_debayered_pixel = numpy.array(
+                [
+                    0,#b
+                    0,#g
+                    255,#r
+                ],
+        dtype=numpy.uint8)
+
+    if(s_pattern_name == "rgbg"):
+        o_debayered_pixel = numpy.array(
+                [
+                   (numpy.uint8( n_val3 )), 
+                   (numpy.uint8( (n_val2 + n_val4)/2 )), 
+                   (numpy.uint8( n_val1 ))
+                ],
+        dtype=numpy.uint8)
+
+    if(s_pattern_name == "bildrauschen"):
+        o_debayered_pixel = numpy.array(
+                [   
+                    0,#numpy.uint8(int(random.random() * pow(2,8))), 
+                    numpy.uint8(int(random.random() * pow(2,8))), 
+                    0,#numpy.uint8(int(random.random() * pow(2,8))),
+                ],
+        dtype=numpy.uint8)
+       
+>>>>>>> 07f4a134c397b531682146e0629e2cbda1537625
 
     if(s_pattern_name == "rrgb"): 
         o_debayered_pixel = numpy.array(
@@ -169,6 +202,7 @@ while n_y < n_img_height_even-2:
         n_val3 = int(a_img[n_y+1][n_x][n_channel_index])
         n_val4 = int(a_img[n_y+1][n_x+1][n_channel_index])
 
+<<<<<<< HEAD
         # a_debayered_pixel = numpy.array(
         #     [
         #         (numpy.uint8(n_val1)),# r
@@ -184,6 +218,24 @@ while n_y < n_img_height_even-2:
             n_val4, 
             "gbbr"
         )
+=======
+
+        # a_debayered_pixel = f_o_get_debayered_pixel(
+        #     n_val1, 
+        #     n_val2, 
+        #     n_val3, 
+        #     n_val4, 
+        #     "bildrauschen"
+        # )
+
+        a_debayered_pixel = numpy.array(
+                [   
+                    n_x / (n_img_width_even/2) * 255,
+                    n_x / (n_img_width_even/2) * 255,
+                    n_x / (n_img_width_even/2) * 255,
+                ],
+        dtype=numpy.uint8)
+>>>>>>> 07f4a134c397b531682146e0629e2cbda1537625
         
         o_debayered_img[int(n_y/2)][int(n_x/2)] = a_debayered_pixel
         # print(a_debayered_pixel)
@@ -192,7 +244,7 @@ while n_y < n_img_height_even-2:
     n_y = n_y + 2 
 
 
-print(s_path_output_file)
+# print(s_path_output_file)
 
 print(
     cv2.imwrite(s_path_output_file+"_"+s_path_output_file_suffix+".jpg", o_debayered_img)

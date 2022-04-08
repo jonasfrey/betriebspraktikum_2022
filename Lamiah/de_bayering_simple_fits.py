@@ -20,9 +20,12 @@ if(b_os_is_windows):
 #o_img = cv2.imread(s_path_file_name)
 o_hdulist = fritz.open(s_path_file_name)
 
+o_header = o_hdulist[0].header
+
 o_img = o_hdulist[0].data
 
 print(o_img)
+print(o_header.keys)
 exit()
 a_img = o_img
 n_img_height = o_img.shape[0] ## important index 0 [0] is height
