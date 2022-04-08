@@ -19,7 +19,8 @@ import matplotlib.pyplot as plt
 
 
 ## Reading a RAW file:
-rawImg = rawpy.imread('IMG_7710.CR2')
+# rawImg = rawpy.imread('IMG_7710.CR2')
+rawImg = rawpy.imread('./../canon_mars_green_red.CR2')
 rgb = rawImg.postprocess(no_auto_bright=True, output_bps=16)
 rgb = rawImg.postprocess(output_bps=16)
 
