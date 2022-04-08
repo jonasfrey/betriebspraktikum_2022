@@ -2,6 +2,8 @@ from cmath import e
 import cv2 
 import os
 import random 
+import numpy as np
+import matplotlib.pyplot as plt
 
 b_os_is_windows = os.name == 'nt'
 
@@ -15,7 +17,7 @@ o_img = cv2.imread(s_path_file_name)
 a_img = o_img
 n_img_width = o_img.shape[0]
 n_img_height = o_img.shape[1]
-n_below_blacklevel = 255/20 #threshhold
+n_below_blacklevel = 255/18 #threshhold
 counter = 0
 def f_set_pixel_value(a_pixel, n_value): # 2 Parameter stehen bei Aufrufen zur Verfügung
     a_pixel[0] = n_value
@@ -28,22 +30,24 @@ for n_y in range(0,n_img_height):
         # threshold the pixel
         a_pixel = a_img[n_y][n_x]
         n_value = a_pixel[0]
-        
+        counter = counter + 1
         n_value = int(n_value)
-        n_value_normalized = n_value/32
-    
 
-        if n_value_normalized < n_below_blacklevel:
-            f_set_pixel_value(a_pixel, 0)
-            counter = counter + 1
+        if n_value < n_below_blacklevel:
+            f_set_pixel_value(a_pixel,0)
         elif n_value > n_below_blacklevel:
-            f_set_pixel_value(a_pixel, n_value_normalized*255, 255) #Funktion min() nimmt immer das kleinste der Argumente
+            
+            f_set_pixel_value(a_pixel, min(n_value + np.log(n_value)), 255)) #Funktion min() nimmt immer das kleinste der Argumente
         # if n_value > n_below_blacklevel:
         #     f_set_pixel_value(a_pixel, min(n_value + 20, 255))
 
-
+print(counter)
+print(n_img_height)
+print(n_img_width)
+print(n_img_height*n_img_width)
+print(n_value)
 
 
 cv2.imwrite(__file__.split(".")[0] +".jpg", o_img)
 
-# print(o_img)
+# print(o_img)git
