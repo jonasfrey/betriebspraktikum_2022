@@ -6,6 +6,7 @@ import os
 import random 
 import numpy
 
+# Ziel: herausfinden, welches Muster die Pixel auf dem Sensor haben
 
 # there are black white (single channel) images where each pixel has a brightness value
 # each pixel has a certain filter in front of the sensor , red / green or blue, 
@@ -139,6 +140,16 @@ def f_o_get_debayered_pixel(
                 ],
         dtype=numpy.uint8)
 
+<<<<<<< HEAD
+    if(s_pattern_name == "rgbg"): 
+        o_debayered_pixel = numpy.array(
+                [
+                    (numpy.uint8(n_val3)),
+                    (numpy.uint8((n_val2 + n_val4)/2)),
+                    (numpy.uint8(n_val1))
+                ],
+        dtype=numpy.uint8)
+=======
     if(s_pattern_name == "nur_rot"):
     
         o_debayered_pixel = numpy.array(
@@ -167,7 +178,18 @@ def f_o_get_debayered_pixel(
                 ],
         dtype=numpy.uint8)
        
+>>>>>>> 07f4a134c397b531682146e0629e2cbda1537625
 
+    if(s_pattern_name == "rrgb"): 
+        o_debayered_pixel = numpy.array(
+                [
+                    (numpy.uint8(n_val3)),
+                    (numpy.uint8((n_val2 + n_val4)/2)),
+                    (numpy.uint8(n_val1))
+                ],
+        dtype=numpy.uint8)
+    
+#je nach dem, wie Pixel aufgebaut ist, bekommt man schlussendlich ein unterschiedliches Resultat
     return o_debayered_pixel 
 
 n_y = 0
@@ -180,6 +202,23 @@ while n_y < n_img_height_even-2:
         n_val3 = int(a_img[n_y+1][n_x][n_channel_index])
         n_val4 = int(a_img[n_y+1][n_x+1][n_channel_index])
 
+<<<<<<< HEAD
+        # a_debayered_pixel = numpy.array(
+        #     [
+        #         (numpy.uint8(n_val1)),# r
+        #         (numpy.uint8( int((n_val2+n_val3)/2))),# g 
+        #         (numpy.uint8(n_val4))# b
+        #     ],
+        #     dtype=numpy.uint8)
+        
+        a_debayered_pixel = f_o_get_debayered_pixel(
+            n_val1, 
+            n_val2, 
+            n_val3, 
+            n_val4, 
+            "gbbr"
+        )
+=======
 
         # a_debayered_pixel = f_o_get_debayered_pixel(
         #     n_val1, 
@@ -196,6 +235,7 @@ while n_y < n_img_height_even-2:
                     n_x / (n_img_width_even/2) * 255,
                 ],
         dtype=numpy.uint8)
+>>>>>>> 07f4a134c397b531682146e0629e2cbda1537625
         
         o_debayered_img[int(n_y/2)][int(n_x/2)] = a_debayered_pixel
         # print(a_debayered_pixel)

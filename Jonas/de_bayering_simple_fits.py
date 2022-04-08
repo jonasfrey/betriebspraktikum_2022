@@ -5,6 +5,14 @@ import numpy
 from astropy.io import fits as fritz
 import rawpy
 
+<<<<<<< HEAD
+
+# sometimes 
+b_os_is_windows = os.name == 'nt'
+
+s_path_file_name = './../2022-03-07T21-09-10_Coordinates_FILTER_30s_Severin-W.jpg'
+# s_path_output_file = __file__.split(".")[0] 
+=======
 # sometimes 
 b_os_is_windows = os.name == 'nt'
 
@@ -15,12 +23,16 @@ o_img_raw = rawpy.imread(s_path_file_name).raw_image
 # exit()
 
 #  s_path_output_file = __file__.split(".")[0]
+>>>>>>> 07f4a134c397b531682146e0629e2cbda1537625
 s_path_output_file = "2022-03-07T21-09-10_Coordinates_FILTER_30s_Severin-W_debayered.jpg" # static filename
 s_path_output_file_suffix = "_default"
 
 if(b_os_is_windows):
     s_path_file_name = "\\".join(s_path_file_name.split("/"))
 
+<<<<<<< HEAD
+o_img = cv2.imread(s_path_file_name)
+=======
 # o_img = cv2.imread(s_path_file_name)
 o_hdulist = fritz.open(s_path_file_name)
 
@@ -31,12 +43,18 @@ o_header = o_hdulist[0].header
 
 o_img = o_hdulist[0].data
 
+<<<<<<< HEAD
+print(o_img)
+exit()
+>>>>>>> 07f4a134c397b531682146e0629e2cbda1537625
+=======
 n_height = o_img.shape[0]
 n_width = o_img.shape[1]
 print("n_height")
 print(n_height)
 print("n_width")
 print(n_width)
+>>>>>>> 6f093091192bd8a176cf3a60889b11acdb259ffe
 
 # n_height_array = len(o_img)
 # n_width_array = len(o_img[0])
@@ -76,6 +94,37 @@ def f_s_color_by_xy(n_x, n_y):
 a_img8 = (o_img / pow(2,8)).astype('uint8')
 n_img_height = o_img.shape[0] ## important index 0 [0] is height
 n_img_width = o_img.shape[1] ## importatnt index 1 [1] is width
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+=======
+>>>>>>> 07f4a134c397b531682146e0629e2cbda1537625
+#optional resize 
+n_resize_factor = 1.0 # no resizing
+# n_resize_factor = 0.25 # 10 times smallerj
+n_img_width = int(n_img_width*n_resize_factor)
+n_img_height = int(n_img_height*n_resize_factor)
+
+o_img = cv2.resize(
+    o_img,
+    (
+        n_img_width,
+        n_img_height
+    ),
+    n_resize_factor,
+    n_resize_factor
+)
+
+# cv2.imwrite("2022-03-07T21-09-10_Coordinates_FILTER_30s_Severin-W"+"_small.jpg", o_img)
+# exit()
+# pseudo crop image if width and height is not even
+n_img_width_even = int(n_img_width/2) * 2
+n_img_height_even = int(n_img_height/2) * 2
+
+n_img_debayered_width = int(n_img_width_even/2)
+n_img_debayered_height = int(n_img_height_even/2)
+=======
+>>>>>>> 6f093091192bd8a176cf3a60889b11acdb259ffe
 
 n_color_channels = 3
 
