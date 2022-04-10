@@ -8,17 +8,32 @@
 
 #define N_FITS_HEADER_MAX_LINE_LENGTH 80
 
+
+// coding standard
+// |prefix|datatype(s)|description|example|  
+// |---|---|---|---|  
+// |n_|int,float,double|number|1.1, 2, -20...|
+// |b_|boolean|true or false, or int|true, false, 1=true,123=true,0=false|
+// |s_|string|"hello", 'h'|string or char any alphanumeric symbol|
+// |a_|array|[1,2,3], [-1,0.443,"asdf"]| array or list|
+// 
+// |f_|function|void(i){ i+2 }|function without return value| 
+// |f_n_|function|int(i){ return i*2 }|function with return value, second prefix is the type of the return|
+// |f_assign|function|int(char*s_test) {*s_test[0] ='a'}| function which expects a pointer, and which will change the value of the pointer| 
+
 // fits image struct 
 struct O_fits_image {
   int n_width;
   int n_height;
   char * s_path_file_name; 
   char * a_data; // only the image data
-  long a_data_length;
+  long n_length_a_data;
   char * s_header;
+  int n_length_s_header;
   char * s_header_with_line_breaks; // the header string with a linebreak \n after every 80 chars, 
+  int n_length_s_header_with_line_breaks;
   char * a_buffer; // the whole data from the file, with the header
-  long a_buffer_length;
+  long n_length_a_buffer;
 };
 
 // fits image struct 
@@ -106,41 +121,62 @@ void f_trim_string(char *s_input)
     f_trim_string_start(s_input);
     f_trim_string_end(s_input);
 }
-char *f_s_get_header_string(
-    char *a_buffer,      // the actual buffer of the fits file,
-    long n_buffer_length // the length of the buffer, 
+void f_assign_header_string(
+    struct O_fits_image * o_fits_image
 ){
-    char *s_header_string = malloc(1);
+    
+    o_fits_image->s_header = malloc(1);
+    o_fits_image->s_header_with_line_breaks = malloc(1);
     int b_header_end_reached = 0;
+    o_fits_image->n_length_s_header = 0;
+    int n_counter_new_lines = 0; 
     long n_i = 0;
-    while (n_i < n_buffer_length)
+    while (n_i < o_fits_image->n_length_a_buffer)
     {
+        if((n_i+1)%N_FITS_HEADER_MAX_LINE_LENGTH == 0){
+            // realloc(o_fits_image->s_header_with_line_breaks, n_i+n_counter_new_lines+1);
+            // o_fits_image->s_header_with_line_breaks[n_i+n_counter_new_lines] = '\n';
+            n_counter_new_lines ++;
+        }
         // printing a header line
         if (!b_header_end_reached)
         {
-            realloc(s_header_string, n_i+1);
-            s_header_string[n_i] = a_buffer[n_i];
+            // realloc(o_fits_image->s_header_with_line_breaks, n_i+n_counter_new_lines+1);
+            // o_fits_image->s_header_with_line_breaks[n_i+n_counter_new_lines] = o_fits_image->a_buffer[n_i];
+            realloc(o_fits_image->s_header, n_i+1);
+            o_fits_image->s_header[n_i] = o_fits_image->a_buffer[n_i];
+
         }
 
         // checking for end of header marked with "END" keyword
-        if (a_buffer[n_i] == 'E')
+        if (
+            o_fits_image->a_buffer[n_i - 1] == 'D' &&
+            o_fits_image->a_buffer[n_i - 2] == 'N' &&
+            o_fits_image->a_buffer[n_i - 3] == 'E'
+            )
         {
-            if (
-                a_buffer[n_i + 1] == 'N' &&
-                a_buffer[n_i + 2] == 'D')
-            {
-                // printf("header end is reached");
-                b_header_end_reached = 1;
-                // from the ending tag "END" -> 'N' and 'D'
-                n_i = n_i + 2;
-            }
+            // printf("header end is reached");
+            b_header_end_reached = 1;
+            o_fits_image->n_length_s_header = n_i;
         }
 
         n_i = n_i + 1;
     }
+    
+    // o_fits_image->s_header[n_i+1] = '\0';
+    // o_fits_image->s_header_with_line_breaks[n_i+n_counter_new_lines+1] = '\0';
 
 
-    return s_header_string;
+    o_fits_image->a_data = o_fits_image->a_buffer+o_fits_image->n_length_s_header; // increment the index/pointer with the header length
+    o_fits_image->n_length_a_data = o_fits_image->n_length_a_buffer-o_fits_image->n_length_s_header;
+    exit(0);
+    printf("o_fits_image->a_buffer[0]: %c\n", o_fits_image->a_buffer[0]);
+    printf("o_fits_image->n_length_a_buffer: %li\n", o_fits_image->n_length_a_buffer);
+    printf("o_fits_image->a_data[0]: %c\n", o_fits_image->a_data[0]);
+    printf("o_fits_image->n_length_data: %li\n", o_fits_image->n_length_a_data);
+}
+char * f_s_get_header_string(){
+    return "deprecated";
 }
 // returns the header, with new lines
 char *f_s_get_header_string_with_linebreaks(
@@ -464,7 +500,7 @@ void f_assign_fits_struct(
     f_open_fits(
         o_fits_image->s_path_file_name, 
         &o_fits_image->a_buffer, 
-        &o_fits_image->a_buffer_length
+        &o_fits_image->n_length_a_buffer
     );
 
     // test if fits was opened
@@ -475,19 +511,30 @@ void f_assign_fits_struct(
     
     
     // get header information 
-    o_fits_image->s_header =  f_s_get_header_string(
-        o_fits_image->a_buffer,
-        o_fits_image->a_buffer_length
+    f_assign_header_string(
+        o_fits_image
     );
+    
+
+    // test is a_data is correctly assigned
+    // int n_i = 0; 
+    // while(n_i < 100){
+    //     printf("%c\n", o_fits_image->a_data[n_i]);
+    //     n_i++;
+    // }
+
     // printf("o_fits_image->s_header:%s\n", o_fits_image->s_header);
 
     
-    o_fits_image->s_header_with_line_breaks =  f_s_get_header_string_with_linebreaks(
-        o_fits_image->a_buffer,
-        o_fits_image->a_buffer_length
-    );
+    // o_fits_image->s_header_with_line_breaks =  f_s_get_header_string_with_linebreaks(
+    //     o_fits_image->a_buffer,
+    //     o_fits_image->a_buffer_length
+    // );
+
 
     // printf("o_fits_image->s_header_with_line_breaks:%s\n", o_fits_image->s_header_with_line_breaks);
+
+    exit(0);
 
 }
 
@@ -505,7 +552,8 @@ int do_stuff()
         &o_fits_image, 
         s_path_file_name_input
     );
-    printf("o_fits_image.s_header_with_line_breaks:%s", o_fits_image.s_header_with_line_breaks);
+    exit(0);
+    // printf("o_fits_image.s_header_with_line_breaks:%s", o_fits_image.s_header_with_line_breaks);
 
     struct O_fits_image_header_property o_fits_image_header_property_NAXIS1; 
     f_assign_o_fits_image_header_property(
