@@ -4,27 +4,35 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include <ctype.h>
 
 #define N_FITS_HEADER_MAX_LINE_LENGTH 80
 
-// credits: https://www.delftstack.com/howto/c/trim-string-in-c/#:~:text=string%20temporary%20string-,Use%20Another%20Custom%20Function%20to%20Trim%20a%20String%20in%20C,the%20first%20non%2Dspace%20character.
-char *trimString(char *str)
-{
-    char *end;
+// fits image struct 
+struct O_fits_image {
+  int n_width;
+  int n_height;
+  char * s_path_file_name; 
+  char * a_data; // only the image data
+  long a_data_length;
+  char * s_header;
+  char * s_header_with_line_breaks; // the header string with a linebreak \n after every 80 chars, 
+  char * a_buffer; // the whole data from the file, with the header
+  long a_buffer_length;
+};
 
-    while(isspace((unsigned char)*str)) str++;
+// fits image struct 
+struct O_fits_image_header_property {
+    char * s_property_searchstring;
+    char * s_line;
+    char * s_property; 
+    char * s_value; 
+    char * s_comment; 
+    long  n_value_long; 
+    double   n_value_double;
+};
 
-    if(*str == 0)
-        return str;
-
-    end = str + strlen(str) - 1;
-    while(end > str && isspace((unsigned char)*end)) end--;
-
-    end[1] = '\0';
-
-    return str;
-}
-char *trim_string(char *str)
+char *trimwhitespace(char *str)
 {
   char *end;
 
@@ -44,7 +52,61 @@ char *trim_string(char *str)
   return str;
 }
 
-char *f_get_header_string(
+float f_n_random_normalized()
+{
+      float r = (float)rand() / (float)RAND_MAX;
+      return r;
+}
+
+
+void f_trim_string_end(char *s_input){
+    // printf("sinput %s", s_input);
+    char * s_new_string = malloc(strlen(s_input));
+    int n_end_index = strlen(s_input)-1;
+    while(isspace(s_input[n_end_index])){
+        n_end_index--;
+    }
+    int n_i = 0; 
+    while(n_i <= n_end_index){
+        s_new_string[n_i] = s_input[n_i];
+        n_i++;
+    }
+    // printf("s_input %s\n", s_input);
+    // printf("s_new_string %s\n", s_new_string);
+    // printf("n_end_index %i\n", n_end_index);
+    
+    strcpy(s_input, s_new_string);
+}
+void f_trim_string_start(char *s_input){
+    // printf("sinput %s", s_input);
+    char * s_new_string = malloc(strlen(s_input)+1);
+    int n_start_index = 0;
+    int n_end_index = strlen(s_input)-1;
+    while(isspace(s_input[n_start_index])){
+        n_start_index++;
+    }
+    int n_i = n_start_index;
+    int n_i2 = 0; 
+    while(n_i <= n_end_index){
+        s_new_string[n_i2] = s_input[n_i];
+        n_i++;
+        n_i2++;
+    }
+    printf("s_input %s\n", s_input);
+    printf("s_new_string %s\n", s_new_string);
+    printf("n_start_index %i\n", n_start_index);
+    printf("n_end_index %i\n", n_end_index);
+    
+    strcpy(s_input, s_new_string);
+    
+}
+void f_trim_string(char *s_input)
+{
+    printf("--s_input:%s--\n", s_input);
+    f_trim_string_start(s_input);
+    f_trim_string_end(s_input);
+}
+char *f_s_get_header_string(
     char *a_buffer,      // the actual buffer of the fits file,
     long n_buffer_length // the length of the buffer, 
 ){
@@ -81,14 +143,13 @@ char *f_get_header_string(
     return s_header_string;
 }
 // returns the header, with new lines
-char *f_get_header_string_with_linebreaks(
+char *f_s_get_header_string_with_linebreaks(
     char *a_buffer,      // the actual buffer of the fits file,
     long n_buffer_length // the length of the buffer, 
 )
 {
-
     int n_index = 0; 
-    char *s_header_string = f_get_header_string(
+    char *s_header_string = f_s_get_header_string(
         a_buffer, 
         n_buffer_length
     );
@@ -133,56 +194,55 @@ long f_n_index_of(
     return n_index;
 }
 //
-void f_get_header_line_prop_val_comment(
+void f_assign_header_line_prop_val_comment(
     char *s_searchterm, // the not case sensitive key you are looking for , for example "NAXES" or "naxes"
     // char * s_header_comment, // this variable will be filled with the header comment, if not existing it will be empty
     char *a_buffer,      // the actual buffer of the fits file,
     long n_buffer_length, // the length of the buffer]
-    char ** s_header_line, // will be filled with 'prop = val / comment'
-    char ** s_header_prop, // will be filled with 'prop'
-    char ** s_header_val, // will be filled with 'val'
-    char ** s_header_comment // will be filled with 'comment'
+    char * s_header_line, // will be filled with 'prop = val / comment'
+    char * s_header_prop, // will be filled with 'prop'
+    char * s_header_val, // string will be filled with 'val',
+    // char * b_header_val, // boolean will be filled with 'val'
+    long * n_header_val_long, // int will be filled with 'val',
+    double * n_header_val_double, // double will be filled with 'val'
+    char * s_header_comment // will be filled with 'comment'
 )
 {
 
     char * s_prop_value = malloc(1);
-    char * s_header_string = f_get_header_string(
+    char * s_header_string = f_s_get_header_string(
         a_buffer,
         n_buffer_length
     );
 
     int n_i = 0;
-    printf("address of *s_header_prop %p\n", *s_header_prop);
-    *s_header_line = realloc(*s_header_line, N_FITS_HEADER_MAX_LINE_LENGTH+1); 
-    *s_header_prop = realloc(*s_header_prop, N_FITS_HEADER_MAX_LINE_LENGTH+1); 
-    *s_header_val = realloc(*s_header_val, N_FITS_HEADER_MAX_LINE_LENGTH+1); 
-    *s_header_comment = realloc(*s_header_comment, N_FITS_HEADER_MAX_LINE_LENGTH+1); 
-
-    printf("address of *s_header_prop %p\n", *s_header_prop);
+    s_header_line = realloc(s_header_line, N_FITS_HEADER_MAX_LINE_LENGTH+1); 
+    s_header_prop = realloc(s_header_prop, N_FITS_HEADER_MAX_LINE_LENGTH+1); 
+    s_header_val = realloc(s_header_val, N_FITS_HEADER_MAX_LINE_LENGTH+1); 
+    s_header_comment = realloc(s_header_comment, N_FITS_HEADER_MAX_LINE_LENGTH+1); 
 
     // char * s_index_of_search = strcasestr(s_header_string_with_linebreaks, s_searchterm); 
     
-    printf("warning: the function f_get_header_prop_val_comment is case sensitive\n"); 
+    printf("warning: the function f_set_header_prop_val_comment is case sensitive\n"); 
 
     char * s_index_of_search = strstr(s_header_string, s_searchterm); 
     
     if(s_index_of_search == NULL){
         printf("property %s was not found in fits header\n", s_searchterm);
-        return NULL;
     }
 
-    // strncpy(s_header_string, *s_header_line,79); 
-    memcpy(*s_header_line, s_index_of_search, N_FITS_HEADER_MAX_LINE_LENGTH);
-    *s_header_line[N_FITS_HEADER_MAX_LINE_LENGTH] = '\0';
+    // strncpy(s_header_string, s_header_line,79); 
+    memcpy(s_header_line, s_index_of_search, N_FITS_HEADER_MAX_LINE_LENGTH);
+    s_header_line[N_FITS_HEADER_MAX_LINE_LENGTH] = '\0';
 
-    long n_index_of_searchterm = f_n_index_of(*s_header_line, s_searchterm);
+    long n_index_of_searchterm = f_n_index_of(s_header_line, s_searchterm);
     char * s_equal_identifier = "=";
     char * s_slash_identifier = "/";
     int n_len_s_equal_identifier = strlen(s_equal_identifier);
     int n_len_s_slash_identifier = strlen(s_slash_identifier);
 
-    long n_index_of_equal = f_n_index_of(*s_header_line, s_equal_identifier);
-    long n_index_of_slash = f_n_index_of(*s_header_line, s_slash_identifier);
+    long n_index_of_equal = f_n_index_of(s_header_line, s_equal_identifier);
+    long n_index_of_slash = f_n_index_of(s_header_line, s_slash_identifier);
     
     // printf("index of =: %li , /: %li ", n_index_of_equal, n_index_of_slash);
     long n_end_index_value; 
@@ -191,42 +251,19 @@ void f_get_header_line_prop_val_comment(
     }else{
         n_end_index_value = n_index_of_slash; 
     }
-    memcpy(*s_header_prop, *s_header_line, strlen(s_searchterm));
-    memcpy(*s_header_val, *s_header_line+n_index_of_equal+n_len_s_equal_identifier, n_end_index_value-n_index_of_equal-n_len_s_equal_identifier);
+    memcpy(s_header_prop, s_header_line, strlen(s_searchterm));
+    memcpy(s_header_val, s_header_line+n_index_of_equal+n_len_s_equal_identifier, n_end_index_value-n_index_of_equal-n_len_s_equal_identifier);
     
     if(n_index_of_slash != -1){
-        memcpy(*s_header_comment, *s_header_line+n_index_of_slash+n_len_s_slash_identifier, N_FITS_HEADER_MAX_LINE_LENGTH-n_index_of_slash-n_len_s_slash_identifier);
+        memcpy(s_header_comment, s_header_line+n_index_of_slash+n_len_s_slash_identifier, N_FITS_HEADER_MAX_LINE_LENGTH-n_index_of_slash-n_len_s_slash_identifier);
     }
 
-    *s_header_prop = trim_string(*s_header_prop);
-    *s_header_val = trim_string(*s_header_val);
-    *s_header_comment = trim_string(*s_header_comment);
+    f_trim_string(s_header_prop);
+    f_trim_string(s_header_val);
+    f_trim_string(s_header_comment);
 
-    // char * *s_header_prop_trimmed = trimString(*s_header_prop);
-    // char * *s_header_val_trimmed = trimString(*s_header_val);
-    // char * *s_header_comment_trimmed = trimString(*s_header_comment);
-
-    // memset(*s_header_prop, 0, N_FITS_HEADER_MAX_LINE_LENGTH);
-    // memset(*s_header_val, 0, N_FITS_HEADER_MAX_LINE_LENGTH);
-    // memset(*s_header_comment, 0, N_FITS_HEADER_MAX_LINE_LENGTH);
-    // printf("*s_header_prop_trimmed %s\n", *s_header_prop_trimmed);
-
-
-    // memcpy(*s_header_prop, *s_header_prop_trimmed, strlen(*s_header_prop_trimmed));
-    // memcpy(*s_header_val, *s_header_val_trimmed, strlen(*s_header_val_trimmed));
-    // memcpy(*s_header_comment, *s_header_comment_trimmed, strlen(*s_header_comment_trimmed));
-
-
-    printf("*s_header_prop %s\n", *s_header_prop);
-    printf("*s_header_val %s\n", *s_header_val);
-    printf("*s_header_comment %s\n", *s_header_comment);
-
-
-    printf("*s_header_prop address %p\n", *s_header_prop);
-    printf("*s_header_val address %p\n", *s_header_val);
-    printf("*s_header_comment address %p\n", *s_header_comment);
-
-    // printf("\n%s\n", s_header_line);
+    long n_val_long = atoi(s_header_val);
+    printf("n_val as long is: %li", n_val_long);
 
     free(s_header_string);
 
@@ -267,20 +304,238 @@ void f_open_fits(
         printf("open file success\n");
     }
 }
+void f_assign_o_fits_image_header_property(
+    struct O_fits_image * o_fits_image, 
+    struct O_fits_image_header_property * o_fits_image_header_property, 
+    char * s_fits_image_header_propert_searchstring
+){
 
+    char * s_header_string = o_fits_image->s_header;
+
+    char * s_prop_value = malloc(1);
+    int n_i = 0;
+    o_fits_image_header_property->s_property_searchstring = s_fits_image_header_propert_searchstring;
+
+    o_fits_image_header_property->s_line = malloc(N_FITS_HEADER_MAX_LINE_LENGTH+1);
+    // o_fits_image_header_property->s_property = memcpy(N_FITS_HEADER_MAX_LINE_LENGTH+1);
+    // o_fits_image_header_property->s_value = memcpy(N_FITS_HEADER_MAX_LINE_LENGTH+1);
+    // o_fits_image_header_property->s_comment = memcpy(N_FITS_HEADER_MAX_LINE_LENGTH+1);
+    // o_fits_image_header_property->n_value_double = memcpy(N_FITS_HEADER_MAX_LINE_LENGTH+1);
+    // o_fits_image_header_property->n_value_long = memcpy(N_FITS_HEADER_MAX_LINE_LENGTH+1);
+
+    char * s_index_of_search = strstr(s_header_string, o_fits_image_header_property->s_property_searchstring); 
+    
+    if(s_index_of_search == NULL){
+        printf("property %s was not found in fits header\n", o_fits_image_header_property->s_property_searchstring);
+    }
+
+    // strncpy(s_header_string, s_header_line,79); 
+    memcpy(o_fits_image_header_property->s_line, s_index_of_search, N_FITS_HEADER_MAX_LINE_LENGTH);
+    o_fits_image_header_property->s_line[N_FITS_HEADER_MAX_LINE_LENGTH] = '\0';
+    // printf("o_fits_image_header_property->s_line:%s\n", o_fits_image_header_property->s_line);
+    int n_line_counter = 0;
+    int n_property_counter = 1;
+    int n_value_counter = 0;
+    int n_comment_counter = 0;
+    char s_equal_identifier = '=';
+    char s_slash_identifier = '/';
+    char * s_property = malloc(1);
+    char * s_value = malloc(1);
+    char * s_comment = malloc(1);
+
+    while(n_line_counter < strlen(o_fits_image_header_property->s_line)){
+        // printf("o_fits_image_header_property->s_line[n_line_counter]:%c\n", o_fits_image_header_property->s_line[n_line_counter]);
+
+        if(o_fits_image_header_property->s_line[n_line_counter] == s_equal_identifier){
+            n_value_counter = 1;
+            n_line_counter++;//skip the identifier
+
+        }
+        if(o_fits_image_header_property->s_line[n_line_counter] == s_slash_identifier){
+            n_comment_counter = 1;
+            n_line_counter++;//skip the identifier
+
+        }
+
+        if(
+            n_property_counter
+            && !(n_value_counter)
+            && !(n_comment_counter)
+        ){
+            s_property = realloc(s_property, n_property_counter+1);
+            s_property[n_property_counter-1] = o_fits_image_header_property->s_line[n_line_counter];
+            s_property[n_property_counter] = '\0';
+            // s_property[n_property_counter-1] = 'a';
+        }
+        if(
+            n_value_counter
+            && !(n_comment_counter)
+        ){
+            s_value = realloc(s_value, n_value_counter+1);
+            s_value[n_value_counter-1] = o_fits_image_header_property->s_line[n_line_counter];
+            s_value[n_value_counter] = '\0';
+        }
+        if(
+            n_comment_counter
+        ){
+            s_comment = realloc(s_comment, n_comment_counter+1);
+            s_comment[n_comment_counter-1] = o_fits_image_header_property->s_line[n_line_counter];
+            s_comment[n_comment_counter] = '\0';
+        }
+        if(n_value_counter) n_value_counter++;
+        if(n_comment_counter) n_comment_counter++;
+        n_property_counter++;
+        n_line_counter++;
+    }
+
+    // long n_index_of_searchterm = f_n_index_of(
+    //     o_fits_image_header_property->s_line,
+    //     o_fits_image_header_property->s_property_searchstring
+    // );
+    // int n_len_s_equal_identifier = strlen(s_equal_identifier);
+    // int n_len_s_slash_identifier = strlen(s_slash_identifier);
+
+    // long n_index_of_equal = f_n_index_of(o_fits_image_header_property->s_line, s_equal_identifier);
+    // long n_index_of_slash = f_n_index_of(o_fits_image_header_property->s_line, s_slash_identifier);
+    
+    // // printf("index of =: %li , /: %li ", n_index_of_equal, n_index_of_slash);
+    // long n_end_index_value; 
+    // if(n_index_of_slash == -1){
+    //     n_end_index_value = N_FITS_HEADER_MAX_LINE_LENGTH;
+    // }else{
+    //     n_end_index_value = n_index_of_slash; 
+    // }
+    // memcpy(
+    //     o_fits_image_header_property->s_property,
+    //     o_fits_image_header_property->s_line,
+    //     strlen(o_fits_image_header_property->s_property_searchstring)
+    //     );
+    // memcpy(
+    //     o_fits_image_header_property->s_value,
+    //     o_fits_image_header_property->s_line+n_index_of_equal+n_len_s_equal_identifier,
+    //     n_end_index_value-n_index_of_equal-n_len_s_equal_identifier
+    //     );
+    
+    // if(n_index_of_slash != -1){
+    //     memcpy(
+    //         o_fits_image_header_property->s_comment,
+    //         o_fits_image_header_property->s_line+n_index_of_slash+n_len_s_slash_identifier,
+    //         N_FITS_HEADER_MAX_LINE_LENGTH-n_index_of_slash-n_len_s_slash_identifier
+    //         );
+    // }
+
+
+
+    // printf("s_property:%s\n", s_property);
+    // printf("s_value:%s\n", s_value);
+    // printf("s_comment:%s\n", s_comment);
+
+    s_property = trimwhitespace(s_property);
+    s_value = trimwhitespace(s_value);
+    s_comment = trimwhitespace(s_comment);
+
+
+    // printf("s_property:%s\n", s_property);
+    // printf("s_value:%s\n", s_value);
+    // printf("s_comment:%s\n", s_comment);
+    o_fits_image_header_property->s_property = s_property;
+    o_fits_image_header_property->s_value = s_value;
+    o_fits_image_header_property->s_comment = s_comment;
+    o_fits_image_header_property->n_value_long = atol(s_value);
+    o_fits_image_header_property->n_value_double = atof(s_value);
+
+    printf("o_fits_image_header_property->s_property:%s\n", o_fits_image_header_property->s_property);
+    printf("o_fits_image_header_property->s_value:%s\n", o_fits_image_header_property->s_value);
+    printf("o_fits_image_header_property->s_comment:%s\n", o_fits_image_header_property->s_comment);
+    printf("o_fits_image_header_property->n_value_long:%li\n", o_fits_image_header_property->n_value_long);
+    printf("o_fits_image_header_property->n_value_double:%f\n", o_fits_image_header_property->n_value_double);
+
+}
+void f_assign_fits_struct(
+    struct O_fits_image * o_fits_image, 
+    char * s_path_file_name 
+){
+
+    o_fits_image->s_path_file_name = malloc(strlen(s_path_file_name)+1);
+    strcpy(o_fits_image->s_path_file_name, s_path_file_name);
+    // printf("o_fits_image.s_path_file_name:%s\n", o_fits_image->s_path_file_name);
+
+    // // open fits image 
+    f_open_fits(
+        o_fits_image->s_path_file_name, 
+        &o_fits_image->a_buffer, 
+        &o_fits_image->a_buffer_length
+    );
+
+    // test if fits was opened
+    // int n_i = 0; 
+    // while(n_i < 100){
+    //     printf("%c\n", o_fits_image->a_buffer[n_i]);
+    // }
+    
+    
+    // get header information 
+    o_fits_image->s_header =  f_s_get_header_string(
+        o_fits_image->a_buffer,
+        o_fits_image->a_buffer_length
+    );
+    // printf("o_fits_image->s_header:%s\n", o_fits_image->s_header);
+
+    
+    o_fits_image->s_header_with_line_breaks =  f_s_get_header_string_with_linebreaks(
+        o_fits_image->a_buffer,
+        o_fits_image->a_buffer_length
+    );
+
+    // printf("o_fits_image->s_header_with_line_breaks:%s\n", o_fits_image->s_header_with_line_breaks);
+
+}
 
 int do_stuff()
 {
-    char *s_path_file_name_input = "./../../../2022-03-07T21-09-10_Coordinates_FILTER_30s_Severin-W.fts";
+    // char *s_path_file_name_input = "./../../../2022-03-07T21-09-10_Coordinates_FILTER_30s_Severin-W.fts";
+    // char *s_path_file_name_input = "./../../../2020-03-16T20-16-29_Coordinates_FILTER_30s_Maria-B.fts";
+    char *s_path_file_name_input = "./../../../2019-10-26T03-26-55_M51_Clear_280s.fts";
+    
     char *s_path_file_name_output = "./output_image_from_c.fts";
+    
+    struct O_fits_image o_fits_image;
+
+    f_assign_fits_struct(
+        &o_fits_image, 
+        s_path_file_name_input
+    );
+    printf("o_fits_image.s_header_with_line_breaks:%s", o_fits_image.s_header_with_line_breaks);
+
+    struct O_fits_image_header_property o_fits_image_header_property_NAXIS1; 
+    f_assign_o_fits_image_header_property(
+        &o_fits_image, 
+        &o_fits_image_header_property_NAXIS1,
+        "NAXIS1"
+    );
+    struct O_fits_image_header_property o_fits_image_header_property_NAXIS2; 
+    f_assign_o_fits_image_header_property(
+        &o_fits_image, 
+        &o_fits_image_header_property_NAXIS2,
+        "NAXIS2"
+    );
+
+    struct O_fits_image_header_property o_fits_image_header_property_OBJECT; 
+    f_assign_o_fits_image_header_property(
+        &o_fits_image, 
+        &o_fits_image_header_property_OBJECT,
+        "OBJECT"
+    );
+
+    exit(0);
     long n_buffer_length;
     char * a_buffer;
+    long n_bytes_per_subpixel = 2;
 
     f_open_fits(
         s_path_file_name_input,
         &a_buffer,
         &n_buffer_length);
-    
 
 
     long n_i = 0;
@@ -305,6 +560,12 @@ int do_stuff()
                 unsigned int n_8bit_low = n_16bits & 0b11111111;
                 // a_buffer[n_i] = n_8bit_high;
                 // a_buffer[n_i+1] = n_8bit_low;
+                a_buffer[n_i] = 128;
+            }else{
+                a_buffer[n_i] = 0;
+            }
+            if( (n_i % 4) < 2 ){
+                a_buffer[n_i] = (int) (f_n_random_normalized()*255);
             }
             // a_buffer[n_i] = (int)(pow(a_buffer[n_i],1));
             // a_buffer[n_i] = (int)(a_buffer[n_i]*3.2);
@@ -339,13 +600,13 @@ int do_stuff()
     // printf("test");
 
 
-    // char * s_header_string = f_get_header_string(
+    // char * s_header_string = f_s_get_header_string(
     //     a_buffer, 
     //     n_buffer_length
     // );
     // printf("header string is:\n %s \n", s_header_string);
 
-    // char * s_header_string_with_linebreaks = f_get_header_string_with_linebreaks(
+    // char * s_header_string_with_linebreaks = f_s_get_header_string_with_linebreaks(
     //     a_buffer, 
     //     n_buffer_length
     // );    
@@ -353,35 +614,27 @@ int do_stuff()
 
     // get single prop value from header 
     char *s_searchterm = "NAXIS1";
-
     char * s_header_line = malloc(N_FITS_HEADER_MAX_LINE_LENGTH);
     char * s_header_prop = malloc(N_FITS_HEADER_MAX_LINE_LENGTH);
     char * s_header_val = malloc(N_FITS_HEADER_MAX_LINE_LENGTH);
     char * s_header_comment = malloc(N_FITS_HEADER_MAX_LINE_LENGTH);
+
     printf("address of s_header_prop %p\n", s_header_prop);
 
-    f_get_header_line_prop_val_comment(
-        s_searchterm,
-        a_buffer,
-        n_buffer_length, 
-        &s_header_line,
-        &s_header_prop, 
-        &s_header_val, 
-        &s_header_comment);
-    printf("%s: s_header_prop:  %s\n",s_searchterm, s_header_prop);
-    printf("%s: s_header_val:  %s\n",s_searchterm, s_header_val);
-    printf("%s: s_header_comment:  %s\n",s_searchterm, s_header_comment);
+    // f_assign_header_line_prop_val_comment(
+    //     s_searchterm,
+    //     a_buffer,
+    //     n_buffer_length, 
+    //     s_header_line,
+    //     s_header_prop, 
+    //     s_header_val, 
+    //     s_header_comment);
 
-
-    printf("s_header_prop address %p\n", s_header_prop);
-    printf("s_header_val address %p\n", s_header_val);
-    printf("s_header_comment address %p\n", s_header_comment);
-
-    printf("%s: s_header_prop:  %s\n",s_searchterm, s_header_prop);
-    printf("%s: s_header_val:  %s\n",s_searchterm, s_header_val);
-    printf("%s: s_header_comment:  %s\n",s_searchterm, s_header_comment);
+    // printf("%s:s_header_prop:%s\n",s_searchterm, s_header_prop);
+    // printf("%s:s_header_val:%s\n",s_searchterm, s_header_val);
+    // printf("%s:s_header_comment:%s\n",s_searchterm, s_header_comment);
     
-    printf("address of s_header_prop %p\n", s_header_prop);
+    // printf("address of s_header_prop %p\n", s_header_prop);
 
 }
 // printf("buffer is %s", buffer);
