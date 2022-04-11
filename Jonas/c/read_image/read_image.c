@@ -89,6 +89,10 @@ void f_assign_header_string(
     long n_i_s_header_with_line_breaks = 0; 
     long n_i = 0;
     
+
+    struct O_fits_image_header_property a_o_fits_image_header_property[1000];
+
+
     char * s_header_line = o_fits_image->a_buffer; 
 
     while (n_i < o_fits_image->n_length_a_buffer)
@@ -112,10 +116,13 @@ void f_assign_header_string(
             o_fits_image->a_o_fits_image_header_property[n_counter_header_lines] = (struct O_fits_image_header_property*)malloc(sizeof(struct O_fits_image_header_property));
             // o_fits_image->a_o_fits_image_header_property[n_counter_header_lines] = struct O_fits_image_header_property o_fits_image_header_property;
             f_assign_o_fits_image_header_property(
-                &o_fits_image, 
-                &o_fits_image->a_o_fits_image_header_property[n_counter_header_lines],
+                &o_fits_image,
+                // &o_fits_image->a_o_fits_image_header_property[n_counter_header_lines],
+                &a_o_fits_image_header_property[n_counter_header_lines],
                 s_header_line
             );
+            // printf("o_fits_image->a_o_fits_image_header_property[n_counter_header_lines]->s_property,adress:%p\n", o_fits_image->a_o_fits_image_header_property[n_counter_header_lines]->s_property);
+
             //increment header line pointer/index
             s_header_line = s_header_line + N_FITS_HEADER_MAX_LINE_LENGTH;
         
@@ -138,9 +145,11 @@ void f_assign_header_string(
             break;
         }
     }
-    printf("%d\n",o_fits_image->a_o_fits_image_header_property[1]->n_value_double);
+    // printf("%d\n",o_fits_image->a_o_fits_image_header_property[1]->n_value_double);
     // printf("%s\n",o_fits_image->a_o_fits_image_header_property[1]->s_value);
-    exit(0);
+    
+    // printf("%s\n",o_fits_image->a_o_fits_image_header_property[1]->s_comment);
+    // exit(0);
 
 
     o_fits_image->n_length_a_o_fits_image_header_property = n_counter_header_lines;
@@ -275,6 +284,8 @@ void f_assign_o_fits_image_header_property(
     char * s_value = malloc(1);
     char * s_comment = malloc(1);
 
+
+
     while(n_line_counter < strlen(o_fits_image_header_property->s_line)){
         // printf("o_fits_image_header_property->s_line[n_line_counter]:%c\n", o_fits_image_header_property->s_line[n_line_counter]);
 
@@ -337,14 +348,17 @@ void f_assign_o_fits_image_header_property(
     o_fits_image_header_property->n_value_long = atol(s_value);
     o_fits_image_header_property->n_value_double = atof(s_value);
 
-    printf("o_fits_image_header_property->s_property,adress:%p\n", o_fits_image_header_property->s_property);
+    // printf("o_fits_image_header_property->s_property,adress:%p\n", o_fits_image_header_property->s_property);
+    // // exit(0);
 
+    // printf("o_fits_image_header_property->s_line:%s\n", o_fits_image_header_property->s_line);
     // printf("o_fits_image_header_property->s_property:%s\n", o_fits_image_header_property->s_property);
     // printf("o_fits_image_header_property->s_value:%s\n", o_fits_image_header_property->s_value);
     // printf("o_fits_image_header_property->s_comment:%s\n", o_fits_image_header_property->s_comment);
     // printf("o_fits_image_header_property->n_value_long:%li\n", o_fits_image_header_property->n_value_long);
     // printf("o_fits_image_header_property->n_value_double:%f\n", o_fits_image_header_property->n_value_double);
 
+    // printf("\n");
 }
 void f_search_header_line_old(){
         // long n_index_of_searchterm = f_n_index_of(
@@ -411,17 +425,18 @@ void f_assign_fits_struct(
         o_fits_image
     );
     
+    
     // printf("%p\n",o_fits_image->a_o_fits_image_header_property[0].s_line);
 
     // printf("o_fits_image->s_header:%s\n", o_fits_image->s_header);
     // printf("o_fits_image->s_header_with_line_breaks:%s\n", o_fits_image->s_header_with_line_breaks);
 
-    struct O_fits_image_header_property * o_fits_image_header_property_naxis1 = f_o_find_o_fits_image_header_property(
-        o_fits_image, 
-        "NAXIS1"
-    );
+    // struct O_fits_image_header_property * o_fits_image_header_property_naxis1 = f_o_find_o_fits_image_header_property(
+    //     o_fits_image, 
+    //     "NAXIS1"
+    // );
 
-    printf("%p\n",o_fits_image_header_property_naxis1->s_line);
+    // printf("%p\n",o_fits_image_header_property_naxis1->s_line);
     // test is a_data is correctly assigned
     // int n_i = 0; 
     // while(n_i < 100){
@@ -430,7 +445,7 @@ void f_assign_fits_struct(
     // }
 
 
-    exit(0);
+    // exit(0);
 
 }
 
@@ -477,9 +492,9 @@ int do_stuff()
             }else{
                 o_fits_image.a_data[n_i] = 0;
             }
-            if( (n_i % 4) < 2 ){
-                o_fits_image.a_data[n_i] = (int) (f_n_random_normalized()*255);
-            }
+            o_fits_image.a_data[n_i] = (int) (f_n_random_normalized()*255);
+            // if( (n_i % 4) < 2 ){
+            // }
             // a_buffer[n_i] = (int)(pow(a_buffer[n_i],1));
             // a_buffer[n_i] = (int)(a_buffer[n_i]*3.2);
         }
