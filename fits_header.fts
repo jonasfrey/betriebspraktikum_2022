@@ -1,0 +1,77 @@
+SIMPLE  =                    T                                                  
+BITPIX  =                   16 /8 unsigned int, 16 & 32 int, -32 & -64 real     
+NAXIS   =                    2 /number of axes                                  
+NAXIS1  =                 4096 /fastest changing axis                           
+NAXIS2  =                 4096 /next to fastest changing axis                   
+BSCALE  =                    1 / physical = BZERO + BSCALE*array_value          
+BZERO   =                32768 / physical = BZERO + BSCALE*array_value          
+DATE-OBS= '2019-10-26T03:26:55' / [ISO 8601] UTC date/time of exposure start    
+EXPTIME =   2.80000000000E+002 / [sec] Duration of exposure                     
+EXPOSURE=   2.80000000000E+002 / [sec] Duration of exposure                     
+CCD-TEMP=  -30.000000000000000 /CCD temperature at start of exposure in C       
+XPIXSZ  =   9.0000000000000000 /Pixel Width in microns (after binning)          
+YPIXSZ  =   9.0000000000000000 /Pixel Height in microns (after binning)         
+XBINNING=                    1 / Binning level along the X-axis                 
+YBINNING=                    1 / Binning level along the Y-axis                 
+XORGSUBF=                    0 /Subframe X position in binned pixels            
+YORGSUBF=                    0 /Subframe Y position in binned pixels            
+READOUTM= '8 MHz   ' /          Readout mode of image                           
+FILTER  = 'Clear   '           / Filter name                                    
+IMAGETYP= 'Light Frame' /       Type of image                                   
+FOCUSPOS=                35666 /Focuser position in steps                       
+FOCUSSSZ=   20.000000000000000 /Focuser step size in microns                    
+FOCUSTEM=   6.1875000000000000 /Focuser temperature in deg C                    
+SITELAT = '45 59 04' /          Latitude of the imaging location                
+SITELONG= '07 47 09' /          Longitude of the imaging location               
+JD      =   2458782.6436921298 /Julian Date at start of exposure                
+FOCALLEN=   2220.0000000000000 /Focal length of telescope in mm                 
+APTDIA  =   600.00000000000000 /Aperture diameter of telescope in mm            
+APTAREA =   197213.48431706429 /Aperture area of telescope in mm^2              
+SWCREATE= 'MaxIm DL Version 5.23 131123 27MPJ' /Name of software that created   
+         the image                                                              
+SBSTDVER= 'SBFITSEXT Version 1.0' /Version of SBFITSEXT standard in effect      
+OBJECT  = 'M 51    '           / Target object name                             
+TELESCOP= 'Rila600 '           / Telescope name                                 
+INSTRUME= 'FLI     '           / Detector instrument name                       
+OBSERVER= 'StellariumGornergrat' / Observer name                                
+NOTES   = '        '                                                            
+FLIPSTAT= '        '                                                            
+CSTRETCH= 'Medium  ' /          Initial display stretch mode                    
+CBLACK  =                 2889 /Initial display black level in ADUs             
+CWHITE  =                 4105 /Initial display white level in ADUs             
+PEDESTAL=                    0 /Correction to add for zero-based ADU            
+SWOWNER = 'StellariumGornergrat' / changed by image_utility_script              
+PIERSIDE= 'WEST    '                                                            
+READMODE= '8 MHz   '                                                            
+AZIMUTH =                 44.0                                                  
+ALTITUDE=                 21.9                                                  
+OUTTEMP =                  0.0                                                  
+OUTHUMID=                  0.0                                                  
+HISTORY File was processed by PinPoint 5.1.8 at 2019-10-26T03:31:41             
+DATE    = '26/10/19'           / [old format] UTC date of exposure start        
+TIME-OBS= '03:26:55'           / [old format] UTC time of exposure start        
+UT      = '03:26:55'           / [old format] UTC time of exposure start        
+TIMESYS = 'UTC     '           / Default time system                            
+RADECSYS= 'FK5     '           / Equatorial coordinate system                   
+AIRMASS =   2.59937365377E+000 / Airmass (multiple of zenithal airmass)         
+ST      = '06 19 43.32'        / Local apparent sidereal time of exp. start     
+LAT-OBS =   4.59844444444E+001 / [deg +N WGS84] Geodetic latitude               
+LONG-OBS=   7.78500000000E+000 / [deg +E WGS84] Geodetic longitude              
+ALT-OBS =   3.15000000000E+003 / [metres] Altitude above mean sea level         
+OBSERVAT= 'Gornergrat Stellarium' / Observatory name                            
+RA      = '13 29 52.70'        / [hms J2000] Target right ascension             
+OBJCTRA = '13 29 52.70'        / [hms J2000] Target right ascension             
+DEC     = '+47 11 42.9'        / [dms +N J2000] Target declination              
+OBJCTDEC= '+47 11 42.9'        / [dms +N J2000] Target declination              
+CLRBAND = 'R       '           / [J-C std] Std. color band of image or C=Color  
+REQ_ID  = '5783    '                                                            
+USER    = 'cleared '                                                            
+MAIL    = 'cleared '                                                            
+DURATION= '15      '                                                            
+TRRATE  = 'Sidereal'                                                            
+ACTIVITY= 'GalaxyZoo_B'                                                         
+PROCESS = 'Normal  '                                                            
+AMBTEMP = '2.8     '           / Ambient temperature inside the dome            
+AMBHUM  = '46.9    '           / Ambient humidity inside the dome               
+AMBPRES = '702.48  '           / Ambient pressure inside the dome               
+END
