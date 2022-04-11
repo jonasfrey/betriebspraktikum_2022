@@ -68,3 +68,16 @@ git pull
 
 ## python fractals 
 [https://github.com/jonasfrey/python_code/tree/main/fractals](https://github.com/jonasfrey/python_code/tree/main/fractals)
+
+
+## fits header 
+|s_key_name|s_description|
+|---|---|
+|TFIELDS|number of fields or columns in the table|
+|NAXIS2|number of rows in the table|
+|TTYPEn|for each column (n ranges from 1 to TFIELDS) gives the name of the column|
+|TFORMn|the data type of the column|
+|TUNITn|the physical units of the column (optional)|
+|BITPIX|defines the data type of the array: 8, 16, 32, 64, -32, -64 for unsigned 8-bit byte, 16-bit| signed integer, 32-bit signed integer, 32-bit IEEE floating point, and 64-bit IEEE double precision floating point, respectively.
+|NAXIS|the number of dimensions in the array, usually 0, 1, 2, 3, or 4.|
+|NAXISn|(n ranges from 1 to NAXIS) defines the size of each dimension|.
