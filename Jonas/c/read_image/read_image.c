@@ -469,37 +469,42 @@ int do_stuff()
 
     // write new data
     long n_i = 0;
-    while (n_i < o_fits_image.n_length_a_data)
+    while (n_i < o_fits_image.n_length_a_buffer)
     {
         // printf("n_i is %li \n", n_i);
         // printf("buffer[%li] is %x \n", buffer[n_i], n_i);
-        if (n_i > 100000)
+        if (n_i > 6083)
         {
-            if (n_i % 2 == 0)
-            {
-                // convert into 16 bit value
-                unsigned int n_16bits = o_fits_image.a_data[n_i];
-                n_16bits = n_16bits << 8;
-                n_16bits = n_16bits | o_fits_image.a_data[n_i + 1];
-                // manipulate 16 bit value
-                n_16bits = (int)n_16bits * 1;
-                // convert into 2 values, each 8 bit
-                unsigned int n_8bit_high = n_16bits >> 8;
-                unsigned int n_8bit_low = n_16bits & 0b11111111;
-                // o_fits_image.a_data[n_i] = n_8bit_high;
-                // o_fits_image.a_data[n_i+1] = n_8bit_low;
-                o_fits_image.a_data[n_i] = 128;
-            }else{
-                o_fits_image.a_data[n_i] = 0;
+
+            // // convert into 16 bit value
+            // unsigned int n_16bits = o_fits_image.a_data[n_i];
+            // n_16bits = n_16bits << 8;
+            // n_16bits = n_16bits | o_fits_image.a_data[n_i + 1];
+            // // manipulate 16 bit value
+            // n_16bits = (int)n_16bits * 1;
+            // // convert into 2 values, each 8 bit
+            // unsigned int n_8bit_high = n_16bits >> 8;
+            // unsigned int n_8bit_low = n_16bits & 0b11111111;
+
+            // o_fits_image.a_data[n_i] = n_8bit_high;
+            // o_fits_image.a_data[n_i+1] = n_8bit_low;
+
+
+
+            if(n_i % 2 == 0){
+                // o_fits_image.a_data[n_i] = (int) (f_n_random_normalized()*255);
+                // o_fits_image.a_data[n_i+1] = (int) (f_n_random_normalized()*255);
+                o_fits_image.a_buffer[(n_i*2)-1] = 255;
+                o_fits_image.a_buffer[n_i*2] = 255;
             }
-            o_fits_image.a_data[n_i] = (int) (f_n_random_normalized()*255);
+            // o_fits_image.a_data[n_i] = (int) (f_n_random_normalized()*255);
             // if( (n_i % 4) < 2 ){
             // }
             // a_buffer[n_i] = (int)(pow(a_buffer[n_i],1));
             // a_buffer[n_i] = (int)(a_buffer[n_i]*3.2);
         }
 
-        n_i = n_i + 1;
+        n_i = n_i + 2;
     }
     
     // write file
