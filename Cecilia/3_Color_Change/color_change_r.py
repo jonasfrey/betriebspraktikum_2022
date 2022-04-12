@@ -10,19 +10,17 @@ if(b_os_is_windows):
 
 o_img = cv2.imread(s_path_file_name)
 
+a_img = o_img
+n_img_width = o_img.shape[0]
+n_img_height = o_img.shape[1]
+n_below_blacklevel = 255/19
+n_pixel_count_below_blacklevel = 0
 n_saturation = 0.3 #this value reduces G B so that R shines brighter
 
 def f_set_pixel_value(a_pixel, n_value):
     a_pixel[0] = n_value * n_saturation
     a_pixel[1] = n_value * n_saturation
     a_pixel[2] = n_value
-
-a_img = o_img
-n_img_width = o_img.shape[0]
-n_img_height = o_img.shape[1]
-
-n_below_blacklevel = 255/19
-n_pixel_count_below_blacklevel = 0
 
 # loop over the image, pixel by pixel
 for n_y in range(0,n_img_height):
@@ -49,6 +47,4 @@ for n_y in range(0,n_img_height):
                 min(n_value_normalized * 255, 255)
             )
 
-b = cv2.imwrite(__file__.split(".")[0] +".jpg", o_img)
 b = cv2.imwrite("color_change_r.jpg", o_img)
-print(b)

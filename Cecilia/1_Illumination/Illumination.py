@@ -19,7 +19,7 @@ a_img = o_img
 n_img_width = o_img.shape[0]
 n_img_height = o_img.shape[1]
 
-n_below_blacklevel = 255/19
+n_below_blacklevel = 255/18.3
 n_pixel_count_below_blacklevel = 0
 
 # loop over the image, pixel by pixel
@@ -34,7 +34,7 @@ for n_y in range(0,n_img_height):
         
         f_set_pixel_value(
                 a_pixel,
-                min(n_value_normalized * n_value * 0.2, 255)
+                min(n_value_normalized * n_value * 0.3, 255)
             )
        
         if n_value < n_below_blacklevel:
