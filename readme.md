@@ -81,3 +81,19 @@ git pull
 |BITPIX|defines the data type of the array: 8, 16, 32, 64, -32, -64 for unsigned 8-bit byte, 16-bit| signed integer, 32-bit signed integer, 32-bit IEEE floating point, and 64-bit IEEE double precision floating point, respectively.
 |NAXIS|the number of dimensions in the array, usually 0, 1, 2, 3, or 4.|
 |NAXISn|(n ranges from 1 to NAXIS) defines the size of each dimension|.
+
+
+## modulo 
+
+|n_i(counter)|n_i%2|
+|---|---|
+|1|1|
+|2|0|
+|3|1|
+|4|0|
+|5|1|
+|6|0|
+|7|1|
+|8|0|
+|9|1|
+|10|0|
