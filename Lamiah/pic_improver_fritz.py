@@ -4,6 +4,7 @@ import os
 import random 
 import numpy as np
 from astropy.io import fits as fritz
+from PIL import Image
 
 b_os_is_windows = os.name == 'nt'
 
@@ -29,8 +30,9 @@ for n_y in range(0,n_height):
     for n_x in range(0,n_width):
         # threshold the pixel
         n_pixel = a_img[n_y][n_x] #Eintrag an n_x-ter Stelle im Eintrag an n_y-ter Stelle im array a_img
+        # 
         
-        n_pixel = int((n_pixel)/(2**16)*255)
+        n_pixel = int(n_pixel)/(2**16)
             
 
         # if n_pixel < n_below_blacklevel:
@@ -39,19 +41,21 @@ for n_y in range(0,n_height):
             
         n_pixel = f_MTF(n_pixel, 1/2)
         
-        a_img[n_y][n_x] = n_pixel
+        a_img[n_y][n_x] = n_pixel*(2**16)
 
         #Funktion min() nimmt immer das kleinste der Argumente
         # if n_value > n_below_blacklevel:
         #     f_set_pixel_value(a_pixel, min(n_value + 20, 255))
 
-
+#a_img = a_img*2 -> arrays können 
 # print(n_img_height)
 # print(n_img_width)
 # print(n_img_height*n_img_width)
 # print(n_value)
 # print(np.max(a_img))
 
-cv2.imwrite(__file__.split(".")[0] +".jpg", a_img)
 
+#cv2.imwrite(__file__.split(".")[0] +".jpg", a_img)
+image=Image.fromarray(a_img,'L')
+image.save(__file__.split(".")[0] +".jpg",format='JPEG')
 # print(o_img)git
