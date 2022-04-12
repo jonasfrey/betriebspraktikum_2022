@@ -576,7 +576,7 @@ int do_stuff()
     setlocale(LC_NUMERIC, "");
     printf(ANSI_COLOR_GREEN "Hooray, .f(r)its was loaded successfully! \n" ANSI_COLOR_RESET);
     printf(ANSI_COLOR_CYAN "o_fits_image->s_header_with_line_breaks :" ANSI_COLOR_RESET "\n%s\n", o_fits_image.s_header_with_line_breaks);
-    printf(ANSI_COLOR_CYAN "o_fits_image->s_header :" ANSI_COLOR_RESET "\n%s\n", o_fits_image.s_header);
+    // printf(ANSI_COLOR_CYAN "o_fits_image->s_header :" ANSI_COLOR_RESET "\n%s\n", o_fits_image.s_header);
     // after header
     printf(ANSI_COLOR_CYAN "o_fits_image->s_path_file_name          :" ANSI_COLOR_RESET "%s\n", o_fits_image.s_path_file_name);
     printf(ANSI_COLOR_CYAN "o_fits_image->n_length_s_header (chars) :" ANSI_COLOR_RESET "%li\n", o_fits_image.n_length_s_header);
