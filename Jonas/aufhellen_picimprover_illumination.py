@@ -9,7 +9,7 @@ import time
 
 # s_path_file_name = sys.argv[1]
 # s_path_file_name = "./../2019-10-26T03-26-55_M51_Clear_280s.fts"
-s_path_file_name = "./2022-03-07T21-09-10_Coordinates_FILTER_30s_Severin-W_debayered.jpg__default_cv2.jpg"
+s_path_file_name = "./2022-03-07T21-09-10_Coordinates_FILTER_30s_Severin-W_debayered.jpg__default_cv2.png"
 a_s_parts = s_path_file_name.split(".")
 a_s_parts.pop()
 a_s_parts.append(str(int(time.time())))

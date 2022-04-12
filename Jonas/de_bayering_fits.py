@@ -133,9 +133,8 @@ for n_y in range(0, n_height):
 
 
 
+# never , never , NEVER use jpg in imagemaipulation !!!!!
+cv2.imwrite(s_path_output_file+"_"+s_path_output_file_suffix+"_cv2.png", a_img_debayered_uint8)
 
-cv2.imwrite(s_path_output_file+"_"+s_path_output_file_suffix+"_cv2.jpg", a_img_debayered_uint8)
-image=Image.fromarray(a_img_debayered_uint8,'BGR')
-image.save(s_path_output_file+"_"+s_path_output_file_suffix+"_cv2.jpg",format='JPEG')
 
     
