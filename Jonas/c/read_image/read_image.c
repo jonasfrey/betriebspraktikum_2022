@@ -585,46 +585,45 @@ int do_stuff()
     printf(ANSI_COLOR_CYAN "o_fits_image->n_width (NAXIS1)          :" ANSI_COLOR_RESET "%li\n", o_fits_image.n_width);
     printf(ANSI_COLOR_CYAN "o_fits_image->n_height (NAXIS2)         :" ANSI_COLOR_RESET "%li\n", o_fits_image.n_height);
     printf(ANSI_COLOR_CYAN "o_fits_image->n_bits_per_pixel (BITPIX) :" ANSI_COLOR_RESET "%li\n", o_fits_image.n_bits_per_pixel);
-    printf(ANSI_COLOR_CYAN "amount of pixels(width*height)          :" ANSI_COLOR_RESET "%'d\n", (long) (o_fits_image.n_width*o_fits_image.n_height));
+    int n_bytes_per_pixel = o_fits_image.n_bits_per_pixel/8;
+    printf(ANSI_COLOR_CYAN "bytes per pixel (BITPIX/8)              :" ANSI_COLOR_RESET "%i\n", n_bytes_per_pixel);
+    int n_amount_of_pixels = (o_fits_image.n_width*o_fits_image.n_height);
+    printf(ANSI_COLOR_CYAN "amount of pixels(width*height)          :" ANSI_COLOR_RESET "%'d\n", (long) n_amount_of_pixels);
+    long n_expected_number_of_bytes = n_amount_of_pixels * (o_fits_image.n_bits_per_pixel/8);
+    printf(ANSI_COLOR_CYAN "expected num of bytes (width*height*2)  :" ANSI_COLOR_RESET "%'d\n", (long) (n_expected_number_of_bytes));
+    printf(ANSI_COLOR_CYAN "n_length_buffer - expctd. n of byts  :" ANSI_COLOR_RESET "%'d\n", (long) o_fits_image.n_length_a_buffer );
 
     // write new data
-    long n_i = 0;
-    while (n_i < o_fits_image.n_length_a_buffer)
+    long n_index_pixel = o_fits_image.n_width * o_fits_image.n_height; 
+    while (n_index_pixel > 0)
     {
-        // printf("n_i is %li \n", n_i);
-        // printf("buffer[%li] is %x \n", buffer[n_i], n_i);
-        if (n_i > 6083)
-        {
+        int n_index_low_pixel_byte = n_index_pixel*2;
+        int n_index_highe_pixel_byte = (n_index_pixel*2)-1;
+        // n_width                      = 5
+        // n_heigth                     = 5
+        // n_amount_pixels              = 5*5 => 25
+        // n_amount_bytes               = 25*2 => 50 
 
-            // // convert into 16 bit value
-            // unsigned int n_16bits = o_fits_image.a_data[n_i];
-            // n_16bits = n_16bits << 8;
-            // n_16bits = n_16bits | o_fits_image.a_data[n_i + 1];
-            // // manipulate 16 bit value
-            // n_16bits = (int)n_16bits * 1;
-            // // convert into 2 values, each 8 bit
-            // unsigned int n_8bit_high = n_16bits >> 8;
-            // unsigned int n_8bit_low = n_16bits & 0b11111111;
+        // iteration 1
+        // n_index_low_pixel_byte       = 0
+        // n_index_highe_pixel_byte     = 1
+        // n_index_buffer_low_pixel_byte= 50-0 = 50
+        // start from end of buffer     = 50-1 = 49
 
-            // o_fits_image.a_data[n_i] = n_8bit_high;
-            // o_fits_image.a_data[n_i+1] = n_8bit_low;
+        // iteration 2
+        // n_index_low_pixel_byte       = 2
+        // n_index_highe_pixel_byte     = 3
+        // n_index_buffer_low_pixel_byte= 50-2 = 48
+        // start from end of buffer     = 50-3 = 47
 
+        // iteration 3
+        // n_index_low_pixel_byte       = 4
+        // n_index_highe_pixel_byte     = 5
+        // n_index_buffer_low_pixel_byte= 50-4 = 46
+        // start from end of buffer     = 50-5 = 45
 
-
-            if(n_i % 2 == 0){
-                // o_fits_image.a_data[n_i] = (int) (f_n_random_normalized()*255);
-                // o_fits_image.a_data[n_i+1] = (int) (f_n_random_normalized()*255);
-                o_fits_image.a_buffer[(n_i*2)-1] = 255;
-                o_fits_image.a_buffer[n_i*2] = 255;
-            }
-            // o_fits_image.a_data[n_i] = (int) (f_n_random_normalized()*255);
-            // if( (n_i % 4) < 2 ){
-            // }
-            // a_buffer[n_i] = (int)(pow(a_buffer[n_i],1));
-            // a_buffer[n_i] = (int)(a_buffer[n_i]*3.2);
-        }
-
-        n_i = n_i + 2;
+        // o_fits_image->n_length_a_buffer  
+        // n_index_pixel--;
     }
     
     // write file
