@@ -89,6 +89,12 @@ char *trimwhitespace(char *str)
   return str;
 }
 
+u_int16_t get_16bitsection(char *n_start, int index) {
+  u_int16_t result;
+  memcpy(&result, (char*)n_start + index*sizeof(u_int16_t), sizeof(u_int16_t));
+  return result;
+}
+
 float f_n_random_normalized()
 {
       float r = (float)rand() / (float)RAND_MAX;
