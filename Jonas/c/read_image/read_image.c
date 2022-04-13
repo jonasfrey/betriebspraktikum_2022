@@ -28,15 +28,23 @@
 // |f_assign|function|int(char*s_test) {*s_test[0] ='a'}| function which expects a pointer, and which will change the value of the pointer| 
 
 // fits image struct 
+
+// the fits standard/specification says: "Each header or data unit must be an exact multiple of 2880 bytes long"
+#define N_FITS_STANDARD_UNIT_FACTOR 2880 
+
 struct O_fits_image {
+int n_fits_standard_unit_factor;
   long n_bits_per_pixel;
+  long n_bytes_per_pixel;
   long n_width;
   long n_height;
   char * s_path_file_name; 
   char * a_data; // only the image data
   long n_length_a_data;
+  long n_length_a_data_padding;
   char * s_header;
   int n_length_s_header;
+  int n_length_s_header_padding;
   char * s_header_with_line_breaks; // the header string with a linebreak \n after every 80 chars, 
   int n_length_s_header_with_line_breaks;
   char * a_buffer; // the whole data from the file, with the header
@@ -170,6 +178,7 @@ void f_assign_header_string(
             // printf("header end is reached");
             b_header_end_reached = 1;
             o_fits_image->n_length_s_header = n_i;
+            o_fits_image->n_length_s_header_padding = o_fits_image->n_fits_standard_unit_factor - (o_fits_image->n_length_s_header % o_fits_image->n_fits_standard_unit_factor);
             o_fits_image->s_header[n_i] = '\0';
         }
 
@@ -196,8 +205,8 @@ void f_assign_header_string(
     // o_fits_image->s_header[n_i+1] = '\0';
     // o_fits_image->s_header_with_line_breaks[n_i+n_counter_new_lines+1] = '\0';
 
-    o_fits_image->a_data = o_fits_image->a_buffer+o_fits_image->n_length_s_header; // increment the index/pointer with the header length
-    o_fits_image->n_length_a_data = o_fits_image->n_length_a_buffer-o_fits_image->n_length_s_header;
+
+
     // printf("o_fits_image->a_buffer[0]: %c\n", o_fits_image->a_buffer[0]);
     // printf("o_fits_image->n_length_a_buffer: %li\n", o_fits_image->n_length_a_buffer);
     // printf("o_fits_image->a_data[0]: %c\n", o_fits_image->a_data[0]);
@@ -506,6 +515,9 @@ void f_assign_fits_struct(
     char * s_path_file_name 
 ){
 
+    // i want to have this on the struct
+    o_fits_image->n_fits_standard_unit_factor = N_FITS_STANDARD_UNIT_FACTOR;
+
     o_fits_image->s_path_file_name = malloc(strlen(s_path_file_name)+1);
     strcpy(o_fits_image->s_path_file_name, s_path_file_name);
     // printf("o_fits_image.s_path_file_name:%s\n", o_fits_image->s_path_file_name);
@@ -551,7 +563,24 @@ void f_assign_fits_struct(
         o_fits_image, 
         "BITPIX"
     );
+
     o_fits_image->n_bits_per_pixel = o_fits_image_header_property_bitpix.n_value_long;
+    o_fits_image->n_bytes_per_pixel = o_fits_image->n_bits_per_pixel/8;
+
+    o_fits_image->n_length_a_data = (
+        o_fits_image->n_width *
+        o_fits_image->n_height *
+        o_fits_image->n_bytes_per_pixel
+    );
+
+    o_fits_image->n_length_a_data_padding = 
+        o_fits_image->n_fits_standard_unit_factor - 
+        (o_fits_image->n_length_a_data % o_fits_image->n_fits_standard_unit_factor);
+
+    o_fits_image->a_data = 
+        o_fits_image->a_buffer+o_fits_image->n_length_s_header + 
+        o_fits_image->n_length_s_header_padding
+        + 1; // increment the index/pointer with the header length
 
     // printf("o_fits_image->n_width:%li\n", o_fits_image_header_property_naxis1.n_value_long);
     // printf("o_fits_image->n_height:%li\n", o_fits_image_header_property_naxis2.n_value_long);
@@ -578,52 +607,99 @@ int do_stuff()
     printf(ANSI_COLOR_CYAN "o_fits_image->s_header_with_line_breaks :" ANSI_COLOR_RESET "\n%s\n", o_fits_image.s_header_with_line_breaks);
     // printf(ANSI_COLOR_CYAN "o_fits_image->s_header :" ANSI_COLOR_RESET "\n%s\n", o_fits_image.s_header);
     // after header
-    printf(ANSI_COLOR_CYAN "o_fits_image->s_path_file_name          :" ANSI_COLOR_RESET "%s\n", o_fits_image.s_path_file_name);
-    printf(ANSI_COLOR_CYAN "o_fits_image->n_length_s_header (chars) :" ANSI_COLOR_RESET "%li\n", o_fits_image.n_length_s_header);
-    printf(ANSI_COLOR_CYAN "o_fits_image->n_length_a_data   (bytes) :" ANSI_COLOR_RESET "%'d\n", o_fits_image.n_length_a_data);
-    printf(ANSI_COLOR_CYAN "o_fits_image->n_length_a_buffer (bytes) :" ANSI_COLOR_RESET "%'d\n", o_fits_image.n_length_a_buffer);
-    printf(ANSI_COLOR_CYAN "o_fits_image->n_width (NAXIS1)          :" ANSI_COLOR_RESET "%li\n", o_fits_image.n_width);
-    printf(ANSI_COLOR_CYAN "o_fits_image->n_height (NAXIS2)         :" ANSI_COLOR_RESET "%li\n", o_fits_image.n_height);
-    printf(ANSI_COLOR_CYAN "o_fits_image->n_bits_per_pixel (BITPIX) :" ANSI_COLOR_RESET "%li\n", o_fits_image.n_bits_per_pixel);
+    printf(ANSI_COLOR_CYAN "o_fits_image->s_path_file_name              :" ANSI_COLOR_RESET "%s\n", o_fits_image.s_path_file_name);
+    printf(ANSI_COLOR_CYAN "o_fits_image->n_length_s_header (chars)     :" ANSI_COLOR_RESET "%li\n", o_fits_image.n_length_s_header);
+    printf(ANSI_COLOR_CYAN "o_fits_image->n_length_a_data   (bytes)     :" ANSI_COLOR_RESET "%'ld\n", o_fits_image.n_length_a_data);
+    printf(ANSI_COLOR_CYAN "o_fits_image->n_length_a_buffer (bytes)     :" ANSI_COLOR_RESET "%'ld\n", o_fits_image.n_length_a_buffer);
+    printf(ANSI_COLOR_CYAN "o_fits_image->n_width (NAXIS1)              :" ANSI_COLOR_RESET "%li\n", o_fits_image.n_width);
+    printf(ANSI_COLOR_CYAN "o_fits_image->n_height (NAXIS2)             :" ANSI_COLOR_RESET "%li\n", o_fits_image.n_height);
+    printf(ANSI_COLOR_CYAN "o_fits_image->n_bits_per_pixel (BITPIX)     :" ANSI_COLOR_RESET "%li\n", o_fits_image.n_bits_per_pixel);
     int n_bytes_per_pixel = o_fits_image.n_bits_per_pixel/8;
-    printf(ANSI_COLOR_CYAN "bytes per pixel (BITPIX/8)              :" ANSI_COLOR_RESET "%i\n", n_bytes_per_pixel);
+    printf(ANSI_COLOR_CYAN "bytes per pixel (BITPIX/8)                  :" ANSI_COLOR_RESET "%i\n", n_bytes_per_pixel);
     int n_amount_of_pixels = (o_fits_image.n_width*o_fits_image.n_height);
-    printf(ANSI_COLOR_CYAN "amount of pixels(width*height)          :" ANSI_COLOR_RESET "%'d\n", (long) n_amount_of_pixels);
+    printf(ANSI_COLOR_CYAN "amount of pixels(width*height)              :" ANSI_COLOR_RESET "%'ld\n", (long) n_amount_of_pixels);
     long n_expected_number_of_bytes = n_amount_of_pixels * (o_fits_image.n_bits_per_pixel/8);
-    printf(ANSI_COLOR_CYAN "expected num of bytes (width*height*2)  :" ANSI_COLOR_RESET "%'d\n", (long) (n_expected_number_of_bytes));
-    printf(ANSI_COLOR_CYAN "n_length_buffer - expctd. n of byts  :" ANSI_COLOR_RESET "%'d\n", (long) o_fits_image.n_length_a_buffer );
+    printf(ANSI_COLOR_CYAN "expected num of bytes (width*height*2)      :" ANSI_COLOR_RESET "%'ld\n", (long) (n_expected_number_of_bytes));
+    printf(ANSI_COLOR_CYAN "n_length_buffer - expctd. n of byts         :" ANSI_COLOR_RESET "%'ld\n", (long) o_fits_image.n_length_a_buffer );
+    printf(ANSI_COLOR_CYAN "o_fits_image->n_fits_standard_unit_factor   :" ANSI_COLOR_RESET "%'ld\n", (long) o_fits_image.n_fits_standard_unit_factor );
+    printf(ANSI_COLOR_CYAN "o_fits_image->n_length_s_header_padding     :" ANSI_COLOR_RESET "\n");
+    printf(ANSI_COLOR_CYAN "(2880-(n_length_s_header %% 2880))           :" ANSI_COLOR_RESET "%'ld\n", (long) o_fits_image.n_length_s_header_padding );
+    printf(ANSI_COLOR_CYAN "o_fits_image->n_length_a_data_padding       :" ANSI_COLOR_RESET "\n");
+    printf(ANSI_COLOR_CYAN "(2880-(n_length_a_data %% 2880))             :" ANSI_COLOR_RESET "%'ld\n", (long) o_fits_image.n_length_a_data_padding );
+    
+    int n_buffer_length_calculated_with_header_and_data = 
+        o_fits_image.n_length_s_header +
+        o_fits_image.n_length_s_header_padding +
+        o_fits_image.n_length_a_data +
+        o_fits_image.n_length_a_data_padding;
+    printf(ANSI_COLOR_CYAN "o_fits_image->n_length_s_header +            :" ANSI_COLOR_RESET "\n");
+    printf(ANSI_COLOR_CYAN "o_fits_image->n_length_s_header_padding +    :" ANSI_COLOR_RESET "\n");
+    printf(ANSI_COLOR_CYAN "o_fits_image->n_length_a_data +              :" ANSI_COLOR_RESET "\n");
+    printf(ANSI_COLOR_CYAN "o_fits_image->n_length_a_data_padding +      :" ANSI_COLOR_RESET "\n");
+    printf(ANSI_COLOR_CYAN "                                             :" ANSI_COLOR_RESET "%'d\n", (long) n_buffer_length_calculated_with_header_and_data );
 
+    // int n_index_buffer = 0;
+    // the fits standard says: "Each header or data unit must be an exact multiple of 2880 bytes long"
+    // while(n_index_buffer < o_fits_image.n_length_s_header + o_fits_image.n_length_s_header_padding){
+    //     printf("%c", o_fits_image.a_buffer[n_index_buffer]);
+    //     n_index_buffer ++;
+    // }
+    // printf("n_index_buffer:%i\n", n_index_buffer);
+    // printf("o_fits_image.a_buffer[n_index_buffer+1]:%i\n", o_fits_image.a_buffer[n_index_buffer+1]);
+    // printf("o_fits_image.a_buffer[n_index_buffer+2]:%i\n", o_fits_image.a_buffer[n_index_buffer+2]);
+    // printf("o_fits_image.a_buffer[n_index_buffer+3]:%i\n", o_fits_image.a_buffer[n_index_buffer+3]);
+
+    // printf("o_fits_image.a_data[0]:%i\n", o_fits_image.a_data[0]);
+    // printf("o_fits_image.a_data[1]:%i\n", o_fits_image.a_data[1]);
+    // printf("o_fits_image.a_data[2]:%i\n", o_fits_image.a_data[2]);
+    // exit(0);
+
+    printf("o_fits_image.a_data[0]:%i\n", o_fits_image.a_data[0]);
+    printf("o_fits_image.a_data[1]:%i\n", o_fits_image.a_data[1]);
+    printf("o_fits_image.a_data[2]:%i\n", o_fits_image.a_data[2]);    
+
+    // o_fits_image.a_data[0] = 0xff00ffeeff00;
+    // o_fits_image.a_data[0] = 0xfefefe;
+    // o_fits_image.a_data[0] = 0xefef;
+    // printf("o_fits_image.a_data[0]:%x\n", (__uint8_t) o_fits_image.a_data[0]);
+    // printf("o_fits_image.a_data[1]:%x\n", (__uint8_t) o_fits_image.a_data[1]);
+    
+    // // check to see what comes after header padding, it should be image data? 
+    // int n_manual_after_padding = 100;
+    // for (size_t i = n_index_buffer; i < n_index_buffer+n_manual_after_padding; i++)
+    // {
+    //     /* code */
+    //     printf("%i\n", o_fits_image.a_buffer[n_index_buffer]);
+
+    // }
+    
+    
     // write new data
-    long n_index_pixel = o_fits_image.n_width * o_fits_image.n_height; 
-    while (n_index_pixel > 0)
+    long n_index_pixel = 0; 
+    double n_value_per_pixel = pow(2, (double) o_fits_image.n_bits_per_pixel) / (o_fits_image.n_height*o_fits_image.n_width);
+    while (n_index_pixel < o_fits_image.n_height*o_fits_image.n_width)
     {
-        int n_index_low_pixel_byte = n_index_pixel*2;
-        int n_index_highe_pixel_byte = (n_index_pixel*2)-1;
-        // n_width                      = 5
-        // n_heigth                     = 5
-        // n_amount_pixels              = 5*5 => 25
-        // n_amount_bytes               = 25*2 => 50 
+        int n_index_lower_byte = n_index_pixel*2;
+        int n_index_higher_byte = (n_index_pixel*2)+1;
+        // o_fits_image.a_data[n_index_higher_byte] = 0b11111111;
+        // o_fits_image.a_data[n_index_lower_byte] = 0b00000000;
+        
+        // o_fits_image.a_data[n_index_higher_byte] = (__int8_t)  (f_n_random_normalized() * 255);
+        // o_fits_image.a_data[n_index_lower_byte] = (__int8_t) ( f_n_random_normalized() * 255);
 
-        // iteration 1
-        // n_index_low_pixel_byte       = 0
-        // n_index_highe_pixel_byte     = 1
-        // n_index_buffer_low_pixel_byte= 50-0 = 50
-        // start from end of buffer     = 50-1 = 49
+        // o_fits_image.a_data[n_index_higher_byte] = (__int8_t)  (f_n_random_normalized() * 255);
+        // o_fits_image.a_data[n_index_lower_byte] = (__int8_t) 0;
 
-        // iteration 2
-        // n_index_low_pixel_byte       = 2
-        // n_index_highe_pixel_byte     = 3
-        // n_index_buffer_low_pixel_byte= 50-2 = 48
-        // start from end of buffer     = 50-3 = 47
+        // int n_value_16_bit = (int) (n_index_pixel % ((int) (pow(2, (double) o_fits_image.n_bits_per_pixel))));
+        __uint16_t n_value_16_bit = (int) (n_index_pixel * n_value_per_pixel);
+        __uint8_t n_value_lower_byte = n_value_16_bit; 
+        __uint8_t n_value_higher_byte = (n_value_16_bit>>8); 
+        // o_fits_image.a_data[n_index_pixel] = (__int8_t) f_n_random_normalized() * 255;
 
-        // iteration 3
-        // n_index_low_pixel_byte       = 4
-        // n_index_highe_pixel_byte     = 5
-        // n_index_buffer_low_pixel_byte= 50-4 = 46
-        // start from end of buffer     = 50-5 = 45
+        o_fits_image.a_data[n_index_higher_byte] = n_value_higher_byte;
+        o_fits_image.a_data[n_index_lower_byte] = n_value_lower_byte;
 
-        // o_fits_image->n_length_a_buffer  
-        // n_index_pixel--;
+        n_index_pixel++;
     }
     
     // write file
@@ -635,7 +711,7 @@ int do_stuff()
     if (pFile)
     {
         fwrite(o_fits_image.a_buffer, o_fits_image.n_length_a_buffer, 1, pFile);
-        puts("Wrote to file!");
+        puts(ANSI_COLOR_GREEN "WrOtE " ANSI_COLOR_RESET ANSI_COLOR_YELLOW" tO " ANSI_COLOR_RESET ANSI_COLOR_MAGENTA " fILe!" ANSI_COLOR_RESET);
 
         // char s_command[80];
         // strcpy(s_command, "gimp");
@@ -647,45 +723,6 @@ int do_stuff()
     {
         puts("Something wrong writing to File.");
     }
-
-    printf("o_fits_image.n_length_a_data: %li", o_fits_image.n_length_a_data);
-    printf("o_fits_image.n_length_a_buffer: %li", o_fits_image.n_length_a_buffer);
-
-    // char * s_header_string = f_s_get_header_string(
-    //     a_buffer, 
-    //     n_buffer_length
-    // );
-    // printf("header string is:\n %s \n", s_header_string);
-
-    // char * s_header_string_with_linebreaks = f_s_get_header_string_with_linebreaks(
-    //     a_buffer, 
-    //     n_buffer_length
-    // );    
-    // printf("header string with linebreaks is:\n %s \n", s_header_string_with_linebreaks);
-
-    // get single prop value from header 
-    char *s_searchterm = "NAXIS1";
-    char * s_header_line = malloc(N_FITS_HEADER_MAX_LINE_LENGTH);
-    char * s_header_prop = malloc(N_FITS_HEADER_MAX_LINE_LENGTH);
-    char * s_header_val = malloc(N_FITS_HEADER_MAX_LINE_LENGTH);
-    char * s_header_comment = malloc(N_FITS_HEADER_MAX_LINE_LENGTH);
-
-    // printf("address of s_header_prop %p\n", s_header_prop);
-
-    // f_assign_header_line_prop_val_comment(
-    //     s_searchterm,
-    //     a_buffer,
-    //     n_buffer_length, 
-    //     s_header_line,
-    //     s_header_prop, 
-    //     s_header_val, 
-    //     s_header_comment);
-
-    // printf("%s:s_header_prop:%s\n",s_searchterm, s_header_prop);
-    // printf("%s:s_header_val:%s\n",s_searchterm, s_header_val);
-    // printf("%s:s_header_comment:%s\n",s_searchterm, s_header_comment);
-    
-    // printf("address of s_header_prop %p\n", s_header_prop);
 
 }
 // printf("buffer is %s", buffer);
