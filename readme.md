@@ -97,3 +97,19 @@ git pull
 |8|0|
 |9|1|
 |10|0|
+
+
+# ausflug gornergrat
+    
+## start 07:50 in bern,  08:07 abfahrt in bern
+
+- jonas, timm, michael 
+steigen von thun ein
+
+## treffpunkt am gleis wo zug fahrt
+
+## zurueck, 17:54 in bern
+
+
+## mitnehmen 
+sonnenbrille, sonnenschutz
